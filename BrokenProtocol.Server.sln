@@ -5,6 +5,10 @@ VisualStudioVersion = 16.0.30225.117
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BrokenProtocol.Server", "BrokenProtocol.Server\BrokenProtocol.Server.csproj", "{B674A281-FA28-4BCD-A90A-A51445E42212}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BrokenProtocol.Client", "BrokenProtocol.Client\BrokenProtocol.Client.csproj", "{91B34AAA-4925-4773-9E0A-9CB514A32FCF}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BrokenProtocol.Tests", "BrokenProtocol.Tests\BrokenProtocol.Tests.csproj", "{4A0545C5-3A62-46D8-B782-5394C4D28DA5}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -15,6 +19,14 @@ Global
 		{B674A281-FA28-4BCD-A90A-A51445E42212}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{B674A281-FA28-4BCD-A90A-A51445E42212}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{B674A281-FA28-4BCD-A90A-A51445E42212}.Release|Any CPU.Build.0 = Release|Any CPU
+		{91B34AAA-4925-4773-9E0A-9CB514A32FCF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{91B34AAA-4925-4773-9E0A-9CB514A32FCF}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{91B34AAA-4925-4773-9E0A-9CB514A32FCF}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{91B34AAA-4925-4773-9E0A-9CB514A32FCF}.Release|Any CPU.Build.0 = Release|Any CPU
+		{4A0545C5-3A62-46D8-B782-5394C4D28DA5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4A0545C5-3A62-46D8-B782-5394C4D28DA5}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4A0545C5-3A62-46D8-B782-5394C4D28DA5}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4A0545C5-3A62-46D8-B782-5394C4D28DA5}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

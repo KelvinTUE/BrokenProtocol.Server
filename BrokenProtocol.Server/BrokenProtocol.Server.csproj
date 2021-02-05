@@ -5,4 +5,19 @@
     <TargetFramework>netcoreapp3.1</TargetFramework>
   </PropertyGroup>
 
+  <ItemGroup>
+    <None Remove="Files\Index.html" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Include="Files\Index.html">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="LogicReinc.Asp" Version="0.1.1" />
+    <PackageReference Include="LogicReinc.Data" Version="1.0.3" />
+  </ItemGroup>
+
 </Project>
