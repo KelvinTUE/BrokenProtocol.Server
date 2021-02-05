@@ -19,6 +19,7 @@ namespace BrokenProtocol.Server
             User.SetProvider(provider);
 
 
+            //Setup server
             _server = new AspServer(Settings.Instance.Port);
             _server.AddAssemblies(typeof(Program).Assembly);
             _server.SetAuthentication(new AuthService());
@@ -26,10 +27,12 @@ namespace BrokenProtocol.Server
 
             _server.EnabledSync = true;
 
+            //Start server
             _server.Start();
             _lifecycle.Start();
 
 
+            //TODO: Add read timeout to properly handle Ctrl+C
             string line = null;
             while (Active)
             {
@@ -44,10 +47,14 @@ namespace BrokenProtocol.Server
                 }
             }
 
+            //Stop server
             _lifecycle.Stop();
             _server.Stop();
         }
 
+        /// <summary>
+        /// Adds a new user to the database
+        /// </summary>
         [Handler("adduser")]
         public static void AddUser(string username, string password, string role)
         {
@@ -62,6 +69,9 @@ namespace BrokenProtocol.Server
             Console.WriteLine("Created user");
         }
 
+        /// <summary>
+        /// Stop the application
+        /// </summary>
         [Handler("exit")]
         public static void Exit()
         {

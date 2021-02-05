@@ -11,6 +11,10 @@ namespace BrokenProtocol.Server.Controllers
     [Route("[controller]/[action]")]
     public class DeviceController : ControllerBase
     { 
+
+        /// <summary>
+        /// Used solely to update online status.
+        /// </summary>
         [HttpGet]
         [Authorize]
         public void Heartbeat()
@@ -19,6 +23,11 @@ namespace BrokenProtocol.Server.Controllers
             user.UpdateActivity();
         }
 
+
+        /// <summary>
+        /// Checks if the current user can pick up the next object it encounters
+        /// </summary>
+        /// <returns>If can encounter</returns>
         [HttpGet]
         [Authorize]
         public bool CanPickup()
@@ -29,6 +38,9 @@ namespace BrokenProtocol.Server.Controllers
             return user.Group?.CanPickup(user) ?? false;
         }
 
+        /// <summary>
+        /// Inform the server that the machine picked up an item
+        /// </summary>
         [HttpPost]
         [Authorize]
         public void PickedUpObject()
@@ -38,6 +50,10 @@ namespace BrokenProtocol.Server.Controllers
             user.UpdateActivity();
         }
 
+        /// <summary>
+        /// Inform the server that it identified an item with a given color
+        /// </summary>
+        /// <param name="color">Color it found (0=black, 1=white)</param>
         [HttpPost]
         [Authorize]
         public void DeterminedObjectColor(ObjectColor color)
@@ -48,6 +64,10 @@ namespace BrokenProtocol.Server.Controllers
         }
 
 
+        /// <summary>
+        /// Get all online devices
+        /// </summary>
+        /// <returns>All online devices</returns>
         [HttpGet]
         [Authorize]
         public List<UserDevice> GetOnlineDevices()

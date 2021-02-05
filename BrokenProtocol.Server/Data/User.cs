@@ -1,5 +1,6 @@
 ﻿using LogicReinc.Data.Unified;
 using LogicReinc.Data.Unified.Attributes;
+using LogicReinc.Security;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -102,7 +103,7 @@ namespace BrokenProtocol.Server.Data
         //Private
         private string Hash(string password)
         {
-            return LogicReinc.Security.Cryptographics.SecureHash(password, Salt, PassItt, PASSWORD_LENGTH);
+            return Cryptographics.SecureHash(password, Salt, PassItt, PASSWORD_LENGTH);
         }
 
     }
