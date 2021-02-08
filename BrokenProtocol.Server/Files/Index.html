@@ -1,15 +1,227 @@
-﻿<html>
+<html>
     <head>
-
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700,400italic|Material+Icons">
+        <link rel="stylesheet" href="https://unpkg.com/vue-material/dist/vue-material.min.css">
+        <link rel="stylesheet" href="https://unpkg.com/vue-material/dist/theme/default-dark.css">
+        <link rel="stylesheet" href="Styles/main.css">
     </head>
     <body>
-        <h1>Whatever</h1>
+        <div id="root">
+            <div class="view login" v-if="View == 'Login'">
+                <md-card class="loginPrompt">
+                    <md-card-header>
+                        <div class="md-title">Broken Protocol Portal</div>
+                    </md-card-header>
+                    <md-card-content>
+                        <md-field>
+                            <label>Username</label>
+                            <md-input v-model="Login.Username"></md-input>
+                        </md-field>
+                        <md-field>
+                            <label>Password</label>
+                            <md-input v-model="Login.Password" type="password"></md-input>
+                        </md-field>
+                    </md-card-content>
+                    <md-card-actions>
+                      <md-button @click="login()">Login</md-button>
+                    </md-card-actions>
+                </md-card>
+            </div>
+            <div class="view main" v-if="View == 'Main'">
+                <md-app>
+                    <!--Toolbar-->
+                    <md-app-toolbar class="md-primary" md-elevation="0">
+                        <md-button class="md-icon-button" @click="toggleMenu" v-if="!menuVisible">
+                            <md-icon>menu</md-icon>
+                        </md-button>
+                        <span class="md-title" style="flex: 1">BrokenProtocol Portal</span>
+                        
+                        <div style="display: inline-block">
+                            Welcome, Group 1
+                        </div>
+                        <md-button>Logout</md-button>
+                    </md-app-toolbar>
+              
+                    <!--Drawer-->
+                    <md-app-drawer :md-active.sync="menuVisible" md-persistent="mini">
+                      <md-toolbar class="md-transparent" md-elevation="0">
+                        <span>Navigation</span>
+              
+                        <div class="md-toolbar-section-end">
+                          <md-button class="md-icon-button md-dense" @click="toggleMenu">
+                            <md-icon>keyboard_arrow_left</md-icon>
+                          </md-button>
+                        </div>
+                      </md-toolbar>
+              
+                      <md-list>
+                        <md-list-item @click="toDashboard">
+                          <md-icon>dashboard</md-icon>
+                          <span class="md-list-item-text" >Dashboard</span>
+                        </md-list-item>
+                        <md-list-item @click="toGroup">
+                          <md-icon>device_hub</md-icon>
+                          <span class="md-list-item-text">Device Group</span>
+                        </md-list-item>
+                        <md-list-item @click="toDevice">
+                          <md-icon>build</md-icon>
+                          <span class="md-list-item-text">My Device</span>
+                        </md-list-item>
+                      </md-list>
+                    </md-app-drawer>
+              
+                    <!--Content-->
+                    <md-app-content>
+                      <!--Dashboard View-->
+                      <div class="appContent dashboard" v-if="MainContent == 'Dashboard'">
+                        <md-card class="partialContent">
+                            <md-card-header>
+                                <h1>Overview</h1>
+                            </md-card-header>
+                            <md-card-content>
+                                Welcome to the BrokenProtocol Portal. 
+                                    The purpose of this server is to facilitate communication between devices for DBL Embedded Systems.
+                                    Besides communication we also offer various tools such as logging and commands to make development easier for you.
+                            </md-card-content>
 
-        <script src="/Sync/Config"></script>
-        <script src="/Sync/Script"></script>
-            <script>
-                var api = new SyncAPI(SYNC_CONFIG);
-            </script>
+                        </md-card>
+                        
+                        <div class="sideBoxes">
+                            <device-box class="sideBox" :device="Device"></device-box>
+                        </div>
+                        
+                      </div>
+                      <!--Device Group View-->
+                      <div class="appContent group" v-if="MainContent == 'Group'">
+                        <div class="partialContent">
+                            <md-card class="spaced">
+                                <md-card-header>
+                                    <h1>Device Group</h1>
+                                </md-card-header>
+                                <md-card-content>
+                                    On this page you will find to which other devices you are connected. 
+                                    Since this year devices will not be connected physically on the same belt, this will be the easiest way to see the state of other devices.
+                                    We will likely also add the capability to setup a fake group with fake devices.
+                                </md-card-content>
+    
+                            </md-card>
+                            <md-card class="spaced">
+                                <md-card-header>
+                                    <div class="md-title">Current Group</div>
+                                </md-card-header>
+                                <md-card-content>
+                                    <b style="color: orange;">You are currently not assigned to any group by a moderator. </b>
+                                    <br /><br />
+    
+                                    Would you like to set up a virtual group? <br />
+                                    <md-button class="md-raised md-accent">Create Virtual Group</md-button>
+                                </md-card-content>
+                            </md-card>
+                        </div>
+                        
+                        <div class="sideBoxes">
+                            <device-box class="sideBox" :device="Device"></device-box>
+                        </div>
+                      </div>
+                      <!--My Device View-->
+                      <div class="appContent device" v-if="MainContent == 'Device'">
+                        <div class="partialContent">
+                            <md-card class="spaced">
+                                <md-card-header>
+                                    <h1>My Device</h1>
+                                </md-card-header>
+                                <md-card-content>
+                                        Here you will find all data regarding your device, logging, commandline, and so forth.
+                                </md-card-content>
+                            </md-card>
+                            <md-card class="spaced">
+                                <md-card-header>
+                                    <div class="md-title">Device Terminal</div>
+                                </md-card-header>
+                                <md-card-content>
+                                    <p>
+                                        Here you will see your device interactions, logging, as well as being able to send commands.
+                                        Commands are only used if you implemented them in your code.
+                                    </p>
+                                    <terminal :device="Device" :blacklist="[]"></terminal>
+                                </md-card-content>
+                            </md-card>
+                        </div>
+                        <div class="sideBoxes">
+                            <device-box class="sideBox" :device="Device"></device-box>
+                            <sensor-box class="sideBox" :device="Device"></sensor-box>
+                        </div>
+                      </div>
+                    </md-app-content>
+                </md-app>
+            </div>
+        </div>
+        <script type="text/x-template" id="deviceBox">
+            <md-card>
+                <md-card-header>
+                    <div class="md-title">My Device</div>
+                </md-card-header>
+                <md-card-content>
+                    <md-table>
+                        <md-table-row v-if="device.Name">
+                            <md-table-cell class="key">Name</md-table-cell>
+                            <md-table-cell>{{device.Name}}</md-table-cell>
+                        </md-table-row>
+                        <md-table-row>
+                            <md-table-cell class="key">Status</md-table-cell>
+                            <md-table-cell v-if="device.Online">
+                                <md-icon style="color: green;">
+                                    circle
+                                </md-icon>
+                                Online
+                            </md-table-cell>
+                            <md-table-cell class="value" v-if="!device.Online">
+                                <md-icon style="color: red;">circle</md-icon>
+                                Offline
+                            </md-table-cell>
+                        </md-table-row>
+                        <md-table-row>
+                            <md-table-cell class="key">Last Connection</md-table-cell>
+                            <md-table-cell v-if="device.LastConnection">{{device.LastConnection}}}</md-table-cell>
+                            <md-table-cell v-if="!device.LastConnection">Never</md-table-cell>
+                        </md-table-row>
+                    </md-table>
+                </md-card-content>
+            </md-card>
+            
+        </script>
+        <script type="text/x-template" id="sensorBox">
+            <md-card v-if="device.Sensors">
+                <md-card-header>
+                    <div class="md-title">Sensor Data</div>
+                </md-card-header>
+                <md-card-content>
+                    <md-table>
+                        <md-table-row v-for="(value, key) in device.Sensors">
+                            <md-table-cell class="key">{{key}}</md-table-cell>
+                            <md-table-cell>{{value}}</md-table-cell>
+                        </md-table-row>
+                    </md-table>
+                </md-card-content>
+            </md-card>
+            
+        </script>
+        <script type="text/x-template" id="terminal">
+            <div class="terminal">
+                <div class="logs">
+                    <div class="log" v-for="device in ">
+
+                    </div>
+                </div>
+                <div class="input">
+                    >
+                    <input type="text" />
+                </div>
+            </div>
+        </script>
+        <script src="https://unpkg.com/vue"></script>
+        <script src="https://unpkg.com/vue-material"></script>
+        <script src="Scripts/main.js"></script>
+
     </body>
-
 </html>

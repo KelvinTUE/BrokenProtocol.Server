@@ -1,0 +1,90 @@
+/* Variable map
+var(--md-theme-default-primary, #448aff);
+var(--md-theme-default-accent, #ff5252);
+*/
+/*Green*/
+:root {
+    --md-theme-default-primary: #2e7d32;
+    --md-theme-default-accent: #6b9b37;
+}
+
+.login {
+    text-align: center;
+}
+
+.loginPrompt{
+    margin-top: 50px;
+    min-width: 500px;
+    max-width: 30%;
+    height: 300px;
+    display: inline-block;
+}
+
+.view .md-app {
+    height: 100%;
+}
+.partialContent {
+    width: calc(100% - 450px);
+}
+.sideBoxes {
+    top: 80px;
+    right: 0px;
+    width: 400px;
+    position: absolute;
+}
+.sideBox {
+    margin-bottom: 10px;
+}
+.dashboardDevice {
+    position: absolute;
+    top: 80px;
+    right: 0px;
+    width: 400px;
+    text-align:center;
+}
+.dashboardDevice .md-button{
+    width: 100%;
+}
+
+.pair {
+    width: 100%;
+    font-size: 16px;
+}
+.key {
+    width: 50%;
+    text-align: right;
+    font-weight: bold;
+}
+.value{
+    
+    text-align: left;
+}
+
+.md-card.spaced {
+    margin-bottom: 20px;
+}
+
+
+.terminal {
+}
+.terminal .logs {
+    height: 400px;
+    background-color: black;
+    padding: 5px;
+    font-family: 'Courier New', monospace !important;
+}
+.terminal .input {
+    height: 30px;
+    background-color: black;
+    user-select: none;
+    padding: 5px;
+}
+.terminal .input input{
+    background-color: transparent;
+    border-color: transparent;
+    color: white;
+    width: 90%;
+    outline: none;
+    user-select: text;
+    font-family: 'Courier New', monospace !important;
+}
