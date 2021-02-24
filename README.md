@@ -36,7 +36,7 @@ All communication with the server is done through individual HTTP requests, mean
 
 Below you will see a simple UML activity diagram on how we expect the usage of the service to work from the device's perspective.
 
-![](https://github.com/KelvinTUE/BrokenProtocol.Server/blob/master/image.jpg?raw=true)
+![](https://raw.githubusercontent.com/KelvinTUE/BrokenProtocol.Server/master/Images/Flowchart.jpg)
 <br />
 Thus a minimal implementation of the protocol uses only 3 calls. Besides these endpoints you may have to use GET: /Device/Heartbeat or POST: /Device/SensorData to indicate your device is alive if you do not communicate with the server within 5 seconds.
 
