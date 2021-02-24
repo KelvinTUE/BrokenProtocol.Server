@@ -5,6 +5,11 @@
     <TargetFramework>netcoreapp3.1</TargetFramework>
   </PropertyGroup>
 
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+    <DocumentationFile>G:\Git\Study\BrokenProtocol.Server\BrokenProtocol.Server\BrokenProtocol.Server.xml</DocumentationFile>
+    <NoWarn>1701;1702;1591</NoWarn>
+  </PropertyGroup>
+
   <ItemGroup>
     <None Remove="Files\Index.html" />
   </ItemGroup>
@@ -16,8 +21,21 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="LogicReinc.Asp" Version="0.1.1" />
+    <PackageReference Include="LogicReinc.Asp" Version="0.1.3" />
     <PackageReference Include="LogicReinc.Data" Version="1.0.3" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\BrokenProtocol.Client\BrokenProtocol.Client.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Update="Files\Scripts\main.js">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="Files\Styles\main.css">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
 
 </Project>

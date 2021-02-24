@@ -1,4 +1,5 @@
 ﻿using BrokenProtocol.Server.Data;
+using BrokenProtocol.Server.Data.Models;
 using LogicReinc.Asp.Authentication;
 using Microsoft.AspNetCore.Mvc;
 using System;
@@ -19,7 +20,7 @@ namespace BrokenProtocol.Server.Controllers
         [Authorize]
         public void Heartbeat()
         {
-            User user = (User)HttpContext.Items["Authentication"];
+            User user = HttpContext.GetAuthenticatedUser();
             user.UpdateActivity();
         }
 
@@ -32,7 +33,7 @@ namespace BrokenProtocol.Server.Controllers
         [Authorize]
         public bool CanPickup()
         {
-            User user = (User)HttpContext.Items["Authentication"];
+            User user = HttpContext.GetAuthenticatedUser();
             user.UpdateActivity();
 
             return user.Group?.CanPickup(user) ?? false;
@@ -43,11 +44,13 @@ namespace BrokenProtocol.Server.Controllers
         /// </summary>
         [HttpPost]
         [Authorize]
-        public void PickedUpObject()
+        public bool PickedUpObject()
         {
-            User user = (User)HttpContext.Items["Authentication"];
+            User user = HttpContext.GetAuthenticatedUser();
             user.Device.TotalCount++;
             user.UpdateActivity();
+
+            return true;
         }
 
         /// <summary>
@@ -56,10 +59,10 @@ namespace BrokenProtocol.Server.Controllers
         /// <param name="color">Color it found (0=black, 1=white)</param>
         [HttpPost]
         [Authorize]
-        public void DeterminedObjectColor(ObjectColor color)
+        public void DeterminedObject([FromBody]ObjectData data)
         {
-            User user = (User)HttpContext.Items["Authentication"];
-            user.Device.IncrementColor(color);
+            User user = HttpContext.GetAuthenticatedUser();
+            user.Device.IncrementColor(data.Color);
             user.UpdateActivity();
         }
 
@@ -73,6 +76,35 @@ namespace BrokenProtocol.Server.Controllers
         public List<UserDevice> GetOnlineDevices()
         {
             return Data.User.Database.Where(x => x.IsOnline).Select(x=>x.GetDevice()).ToList();
+        }
+
+        /// <summary>
+        /// Saves the provided dictionary as sensordata for this device
+        /// </summary>
+        /// <param name="sensorData">Data to save to this device</param>
+        /// <returns>The currently saved sensordata</returns>
+        [HttpPost]
+        [Authorize]
+        public bool Log([FromBody]Log log)
+        {
+            User user = HttpContext.GetAuthenticatedUser();
+            user.Log(log);
+            return true;
+        }
+
+        /// <summary>
+        /// Saves the provided dictionary as sensordata for this device
+        /// </summary>
+        /// <param name="sensorData">Sensordata of device</param>
+        /// <returns>true</returns>
+        [HttpPost]
+        [Authorize]
+        public bool SensorData([FromBody] SensorData sensorData)
+        {
+            User user = HttpContext.GetAuthenticatedUser();
+            user.SensorData(sensorData);
+            user.UpdateActivity();
+            return true;
         }
     }
 }

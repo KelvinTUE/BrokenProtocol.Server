@@ -23,7 +23,7 @@
                         </md-field>
                     </md-card-content>
                     <md-card-actions>
-                      <md-button @click="login()">Login</md-button>
+                        <md-button @click="login()">Login</md-button>
                     </md-card-actions>
                 </md-card>
             </div>
@@ -35,123 +35,123 @@
                             <md-icon>menu</md-icon>
                         </md-button>
                         <span class="md-title" style="flex: 1">BrokenProtocol Portal</span>
-                        
+
                         <div style="display: inline-block">
-                            Welcome, Group 1
+                            Welcome, {{User.Name}}
                         </div>
                         <md-button>Logout</md-button>
                     </md-app-toolbar>
-              
+
                     <!--Drawer-->
                     <md-app-drawer :md-active.sync="menuVisible" md-persistent="mini">
-                      <md-toolbar class="md-transparent" md-elevation="0">
-                        <span>Navigation</span>
-              
-                        <div class="md-toolbar-section-end">
-                          <md-button class="md-icon-button md-dense" @click="toggleMenu">
-                            <md-icon>keyboard_arrow_left</md-icon>
-                          </md-button>
-                        </div>
-                      </md-toolbar>
-              
-                      <md-list>
-                        <md-list-item @click="toDashboard">
-                          <md-icon>dashboard</md-icon>
-                          <span class="md-list-item-text" >Dashboard</span>
-                        </md-list-item>
-                        <md-list-item @click="toGroup">
-                          <md-icon>device_hub</md-icon>
-                          <span class="md-list-item-text">Device Group</span>
-                        </md-list-item>
-                        <md-list-item @click="toDevice">
-                          <md-icon>build</md-icon>
-                          <span class="md-list-item-text">My Device</span>
-                        </md-list-item>
-                      </md-list>
+                        <md-toolbar class="md-transparent" md-elevation="0">
+                            <span>Navigation</span>
+
+                            <div class="md-toolbar-section-end">
+                                <md-button class="md-icon-button md-dense" @click="toggleMenu">
+                                    <md-icon>keyboard_arrow_left</md-icon>
+                                </md-button>
+                            </div>
+                        </md-toolbar>
+
+                        <md-list>
+                            <md-list-item @click="toDashboard">
+                                <md-icon>dashboard</md-icon>
+                                <span class="md-list-item-text">Dashboard</span>
+                            </md-list-item>
+                            <md-list-item @click="toGroup">
+                                <md-icon>device_hub</md-icon>
+                                <span class="md-list-item-text">Device Group</span>
+                            </md-list-item>
+                            <md-list-item @click="toDevice">
+                                <md-icon>build</md-icon>
+                                <span class="md-list-item-text">My Device</span>
+                            </md-list-item>
+                        </md-list>
                     </md-app-drawer>
-              
+
                     <!--Content-->
                     <md-app-content>
-                      <!--Dashboard View-->
-                      <div class="appContent dashboard" v-if="MainContent == 'Dashboard'">
-                        <md-card class="partialContent">
-                            <md-card-header>
-                                <h1>Overview</h1>
-                            </md-card-header>
-                            <md-card-content>
-                                Welcome to the BrokenProtocol Portal. 
+                        <!--Dashboard View-->
+                        <div class="appContent dashboard" v-if="MainContent == 'Dashboard'">
+                            <md-card class="partialContent">
+                                <md-card-header>
+                                    <h1>Overview</h1>
+                                </md-card-header>
+                                <md-card-content>
+                                    Welcome to the BrokenProtocol Portal.
                                     The purpose of this server is to facilitate communication between devices for DBL Embedded Systems.
                                     Besides communication we also offer various tools such as logging and commands to make development easier for you.
-                            </md-card-content>
+                                </md-card-content>
 
-                        </md-card>
-                        
-                        <div class="sideBoxes">
-                            <device-box class="sideBox" :device="Device"></device-box>
-                        </div>
-                        
-                      </div>
-                      <!--Device Group View-->
-                      <div class="appContent group" v-if="MainContent == 'Group'">
-                        <div class="partialContent">
-                            <md-card class="spaced">
-                                <md-card-header>
-                                    <h1>Device Group</h1>
-                                </md-card-header>
-                                <md-card-content>
-                                    On this page you will find to which other devices you are connected. 
-                                    Since this year devices will not be connected physically on the same belt, this will be the easiest way to see the state of other devices.
-                                    We will likely also add the capability to setup a fake group with fake devices.
-                                </md-card-content>
-    
                             </md-card>
-                            <md-card class="spaced">
-                                <md-card-header>
-                                    <div class="md-title">Current Group</div>
-                                </md-card-header>
-                                <md-card-content>
-                                    <b style="color: orange;">You are currently not assigned to any group by a moderator. </b>
-                                    <br /><br />
-    
-                                    Would you like to set up a virtual group? <br />
-                                    <md-button class="md-raised md-accent">Create Virtual Group</md-button>
-                                </md-card-content>
-                            </md-card>
+
+                            <div class="sideBoxes">
+                                <device-box class="sideBox" :device="Device"></device-box>
+                            </div>
+
                         </div>
-                        
-                        <div class="sideBoxes">
-                            <device-box class="sideBox" :device="Device"></device-box>
+                        <!--Device Group View-->
+                        <div class="appContent group" v-if="MainContent == 'Group'">
+                            <div class="partialContent">
+                                <md-card class="spaced">
+                                    <md-card-header>
+                                        <h1>Device Group</h1>
+                                    </md-card-header>
+                                    <md-card-content>
+                                        On this page you will find to which other devices you are connected.
+                                        Since this year devices will not be connected physically on the same belt, this will be the easiest way to see the state of other devices.
+                                        We will likely also add the capability to setup a fake group with fake devices.
+                                    </md-card-content>
+
+                                </md-card>
+                                <md-card class="spaced">
+                                    <md-card-header>
+                                        <div class="md-title">Current Group</div>
+                                    </md-card-header>
+                                    <md-card-content>
+                                        <b style="color: orange;">You are currently not assigned to any group by a moderator. </b>
+                                        <br /><br />
+
+                                        Would you like to set up a virtual group? <br />
+                                        <md-button class="md-raised md-accent">Create Virtual Group</md-button>
+                                    </md-card-content>
+                                </md-card>
+                            </div>
+
+                            <div class="sideBoxes">
+                                <device-box class="sideBox" :device="Device"></device-box>
+                            </div>
                         </div>
-                      </div>
-                      <!--My Device View-->
-                      <div class="appContent device" v-if="MainContent == 'Device'">
-                        <div class="partialContent">
-                            <md-card class="spaced">
-                                <md-card-header>
-                                    <h1>My Device</h1>
-                                </md-card-header>
-                                <md-card-content>
+                        <!--My Device View-->
+                        <div class="appContent device" v-if="MainContent == 'Device'">
+                            <div class="partialContent">
+                                <md-card class="spaced">
+                                    <md-card-header>
+                                        <h1>My Device</h1>
+                                    </md-card-header>
+                                    <md-card-content>
                                         Here you will find all data regarding your device, logging, commandline, and so forth.
-                                </md-card-content>
-                            </md-card>
-                            <md-card class="spaced">
-                                <md-card-header>
-                                    <div class="md-title">Device Terminal</div>
-                                </md-card-header>
-                                <md-card-content>
-                                    <p>
-                                        Here you will see your device interactions, logging, as well as being able to send commands.
-                                        Commands are only used if you implemented them in your code.
-                                    </p>
-                                    <terminal :device="Device" :blacklist="[]"></terminal>
-                                </md-card-content>
-                            </md-card>
+                                    </md-card-content>
+                                </md-card>
+                                <md-card class="spaced">
+                                    <md-card-header>
+                                        <div class="md-title">Device Terminal</div>
+                                    </md-card-header>
+                                    <md-card-content>
+                                        <p>
+                                            Here you will see your device interactions, logging, as well as being able to send commands.
+                                            Commands are only used if you implemented them in your code.
+                                        </p>
+                                        <terminal :device="Device" :blacklist="[]"></terminal>
+                                    </md-card-content>
+                                </md-card>
+                            </div>
+                            <div class="sideBoxes">
+                                <device-box class="sideBox" :device="Device"></device-box>
+                                <sensor-box class="sideBox" :device="Device"></sensor-box>
+                            </div>
                         </div>
-                        <div class="sideBoxes">
-                            <device-box class="sideBox" :device="Device"></device-box>
-                            <sensor-box class="sideBox" :device="Device"></sensor-box>
-                        </div>
-                      </div>
                     </md-app-content>
                 </md-app>
             </div>
@@ -182,13 +182,13 @@
                         </md-table-row>
                         <md-table-row>
                             <md-table-cell class="key">Last Connection</md-table-cell>
-                            <md-table-cell v-if="device.LastConnection">{{device.LastConnection}}}</md-table-cell>
+                            <md-table-cell v-if="device.LastConnection">{{device.LastConnection}}</md-table-cell>
                             <md-table-cell v-if="!device.LastConnection">Never</md-table-cell>
                         </md-table-row>
                     </md-table>
                 </md-card-content>
             </md-card>
-            
+
         </script>
         <script type="text/x-template" id="sensorBox">
             <md-card v-if="device.Sensors">
@@ -204,13 +204,13 @@
                     </md-table>
                 </md-card-content>
             </md-card>
-            
+
         </script>
         <script type="text/x-template" id="terminal">
             <div class="terminal">
                 <div class="logs">
-                    <div class="log" v-for="device in ">
-
+                    <div class="log" v-for="log in device.Logs">
+                        {{device.Name}}:{{log.Message}}
                     </div>
                 </div>
                 <div class="input">
@@ -219,6 +219,9 @@
                 </div>
             </div>
         </script>
+        <script src="/Sync/Config"></script>
+        <script src="/Sync/Script"></script>
+        <script src="https://unpkg.com/vue"></script>
         <script src="https://unpkg.com/vue"></script>
         <script src="https://unpkg.com/vue-material"></script>
         <script src="Scripts/main.js"></script>

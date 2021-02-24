@@ -1,0 +1,66 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>BrokenProtocol.Server</name>
+    </assembly>
+    <members>
+        <member name="M:BrokenProtocol.Server.Controllers.DeviceController.Heartbeat">
+            <summary>
+            Used solely to update online status.
+            </summary>
+        </member>
+        <member name="M:BrokenProtocol.Server.Controllers.DeviceController.CanPickup">
+            <summary>
+            Checks if the current user can pick up the next object it encounters
+            </summary>
+            <returns>If can encounter</returns>
+        </member>
+        <member name="M:BrokenProtocol.Server.Controllers.DeviceController.PickedUpObject">
+            <summary>
+            Inform the server that the machine picked up an item
+            </summary>
+        </member>
+        <member name="M:BrokenProtocol.Server.Controllers.DeviceController.DeterminedObject(BrokenProtocol.Server.Data.Models.ObjectData)">
+            <summary>
+            Inform the server that it identified an item with a given color
+            </summary>
+            <param name="color">Color it found (0=black, 1=white)</param>
+        </member>
+        <member name="M:BrokenProtocol.Server.Controllers.DeviceController.GetOnlineDevices">
+            <summary>
+            Get all online devices
+            </summary>
+            <returns>All online devices</returns>
+        </member>
+        <member name="M:BrokenProtocol.Server.Controllers.DeviceController.Log(BrokenProtocol.Server.Data.Log)">
+            <summary>
+            Saves the provided dictionary as sensordata for this device
+            </summary>
+            <param name="sensorData">Data to save to this device</param>
+            <returns>The currently saved sensordata</returns>
+        </member>
+        <member name="M:BrokenProtocol.Server.Controllers.DeviceController.SensorData(BrokenProtocol.Server.Data.SensorData)">
+            <summary>
+            Saves the provided dictionary as sensordata for this device
+            </summary>
+            <param name="sensorData">Sensordata of device</param>
+            <returns>true</returns>
+        </member>
+        <member name="M:BrokenProtocol.Server.Controllers.UserController.GetUserData">
+            <summary>
+            Returns basic user information
+            </summary>
+            <returns>Basic user data</returns>
+        </member>
+        <member name="M:BrokenProtocol.Server.Program.AddUser(System.String,System.String,System.String,System.String)">
+            <summary>
+            Adds a new user to the database
+            </summary>
+        </member>
+        <member name="M:BrokenProtocol.Server.Program.Exit">
+            <summary>
+            Stop the application
+            </summary>
+        </member>
+    </members>
+</doc>

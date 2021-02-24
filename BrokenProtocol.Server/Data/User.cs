@@ -1,4 +1,9 @@
-﻿using LogicReinc.Data.Unified;
+﻿using BrokenProtocol.Server.Data.Models;
+using BrokenProtocol.Server.Websockets;
+using BrokenProtocol.Server.Websockets.Packets;
+using LogicReinc.Asp.Authentication;
+using LogicReinc.Collections;
+using LogicReinc.Data.Unified;
 using LogicReinc.Data.Unified.Attributes;
 using LogicReinc.Security;
 using System;
@@ -10,7 +15,7 @@ using System.Text.Json.Serialization;
 namespace BrokenProtocol.Server.Data
 {
     [UnifiedCollection("Users")]
-    public class User : UnifiedIMObject<User>
+    public class User : UnifiedIMObject<User>, IAuthUser
     {
         private static readonly TimeSpan ACTIVITY_TIMEOUT = TimeSpan.FromSeconds(5);
 
@@ -32,6 +37,7 @@ namespace BrokenProtocol.Server.Data
 
         public Device Device { get; set; } = new Device();
 
+        private TSList<ManagementSocket> ActiveClients { get; set; } = new TSList<ManagementSocket>();
 
         //Authentication
         public int PassItt { get; set; }
@@ -41,8 +47,54 @@ namespace BrokenProtocol.Server.Data
 
         public string[] Roles { get; set; }
 
+        //Socket
+        public void AddClient(ManagementSocket socket)
+        {
+            ActiveClients.Add(socket);
+        }
+        public void RemoveClient(ManagementSocket socket)
+        {
+            ActiveClients.Remove(socket);
+        }
+        public bool HasClients()
+        {
+            return ActiveClients.Length > 0;
+        }
 
+        public void Send(ManagementMessage message)
+        {
+            ActiveClients.Where(x => x.Active).ForEach(x =>
+            {
+                try
+                {
+                    _ = x.SendAsync(message);
+                }
+                catch(Exception ex)
+                {
+                    //Ignore
+                    Console.WriteLine($"Failed to send message of type [{message.Type} to {x.Address}");
+                }
+            });
+        }
 
+        public void Log(Log log)
+        {
+            Send(ManagementMessage.FromObject(log));
+        }
+
+        public void SensorData(SensorData sensorData)
+        {
+            Send(ManagementMessage.FromObject(sensorData));
+        }
+
+        public void PushOnlineStatus()
+        {
+            Send(ManagementMessage.FromObject(new UserStatus()
+            {
+                Online = IsOnline,
+                LastActivity = LastActivity
+            }));
+        }
 
         //Overrides
         public override bool Insert()
@@ -74,6 +126,8 @@ namespace BrokenProtocol.Server.Data
         //Fetching
         public static User GetUserByName(string username)
         {
+            if (username == null)
+                throw new ArgumentNullException("Missing username, ensure 'User' property");
             return Index.GetIndex(nameof(Username), username.ToLower()).Cast<User>().FirstOrDefault();
         }
         public static User Login(string username, string password)
@@ -84,10 +138,12 @@ namespace BrokenProtocol.Server.Data
 
 
             if (user == null)
-                throw new Exception("User does not exist");
+                return null;
+            //throw new ArgumentException("User does not exist");
 
             if (user.Hash(password) != user.Password)
-                throw new Exception("Wrong credentials");
+                return null;
+                //throw new ArgumentException("Wrong credentials");
             return user;
         }
 
@@ -106,6 +162,15 @@ namespace BrokenProtocol.Server.Data
             return Cryptographics.SecureHash(password, Salt, PassItt, PASSWORD_LENGTH);
         }
 
+        public string[] GetRoles()
+        {
+            return Roles;
+        }
+
+        public string GetID()
+        {
+            return ObjectID;
+        }
     }
 
     public class UserDevice

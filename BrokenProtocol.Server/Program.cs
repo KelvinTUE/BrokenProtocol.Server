@@ -1,4 +1,5 @@
 ﻿using BrokenProtocol.Server.Data;
+using BrokenProtocol.Server.Websockets;
 using LogicReinc.Asp;
 using LogicReinc.ConsoleUtility;
 using LogicReinc.Data.FileIO;
@@ -6,10 +7,12 @@ using System;
 
 namespace BrokenProtocol.Server
 {
-    class Program : ExtendedConsole<Program>
+    public class Program : ExtendedConsole<Program>
     {
         static AspServer _server = null;
         static BPLifecycle _lifecycle = new BPLifecycle();
+
+        public static AspServer Server => _server;
 
         public static bool Active { get; private set; } = true;
 
@@ -24,11 +27,14 @@ namespace BrokenProtocol.Server
             _server.AddAssemblies(typeof(Program).Assembly);
             _server.SetAuthentication(new AuthService());
             _server.AddStaticDirectory("", "Files");
-
+            _server.SetJsonOptions((options) => options.JsonSerializerOptions.PropertyNamingPolicy = null);
+            _server.AddEndpoint("index.html", httpContext => httpContext.Response.Redirect("/Index.html"));
+            _server.AddWebSocketAuthenticated<ManagementSocket>("/ws/management", "Management");
+            
             _server.EnabledSync = true;
 
             //Start server
-            _server.Start();
+            _ =_server.Start();
             _lifecycle.Start();
 
 
@@ -49,14 +55,14 @@ namespace BrokenProtocol.Server
 
             //Stop server
             _lifecycle.Stop();
-            _server.Stop();
+            _ = _server.Stop();
         }
 
         /// <summary>
         /// Adds a new user to the database
         /// </summary>
         [Handler("adduser")]
-        public static void AddUser(string username, string password, string role)
+        public static void AddUser(string username, string password, string deviceName, string role)
         {
             User user = new User()
             {
@@ -64,6 +70,7 @@ namespace BrokenProtocol.Server
                 Password = password,
                 Roles = new string[] { role }
             };
+            user.Device.Name = deviceName;
 
             user.Insert();
             Console.WriteLine("Created user");

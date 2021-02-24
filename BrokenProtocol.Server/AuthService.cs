@@ -6,28 +6,18 @@ using System.Text;
 
 namespace BrokenProtocol.Server
 {
-    public class AuthService : AuthenticationService
+    public class AuthService : AuthenticationService<User>
     {
         public override TimeSpan Expires => TimeSpan.FromDays(7);
 
-        public override object Authenticate(string user, string pass)
+        public override IAuthUser AuthenticateAuthUser(string user, string pass)
         {
             return User.Login(user, pass);
         }
 
-        public override string[] GetRoles(object obj)
-        {
-            return ((User)obj).Roles;
-        }
-
-        public override object GetUser(string id)
+        public override IAuthUser GetAuthUser(string id)
         {
             return User.GetObject(id);
-        }
-
-        public override string GetUserID(object obj)
-        {
-            return ((User)obj).ObjectID;
         }
     }
 }
