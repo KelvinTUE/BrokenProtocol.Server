@@ -1,5 +1,4 @@
-﻿using BrokenProtocol.Server.Data.Models;
-using BrokenProtocol.Server.Websockets;
+﻿using BrokenProtocol.Server.Websockets;
 using BrokenProtocol.Server.Websockets.Packets;
 using LogicReinc.Asp.Authentication;
 using LogicReinc.Collections;
@@ -11,6 +10,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Text.Json.Serialization;
+using BrokenProtocol.Shared.Models;
 
 namespace BrokenProtocol.Server.Data
 {
@@ -127,7 +127,7 @@ namespace BrokenProtocol.Server.Data
         public static User GetUserByName(string username)
         {
             if (username == null)
-                throw new ArgumentNullException("Missing username, ensure 'User' property");
+                throw new ArgumentNullException(nameof(username),"Missing username, ensure 'User' property");
             return Index.GetIndex(nameof(Username), username.ToLower()).Cast<User>().FirstOrDefault();
         }
         public static User Login(string username, string password)

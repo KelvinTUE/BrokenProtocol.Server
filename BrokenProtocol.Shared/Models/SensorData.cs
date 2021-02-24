@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace BrokenProtocol.Server.Data
+namespace BrokenProtocol.Shared.Models
 {
     public class SensorData
     {

@@ -1,8 +1,8 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <OutputType>Exe</OutputType>
     <TargetFramework>netcoreapp3.1</TargetFramework>
+    <OutputType>Exe</OutputType>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
@@ -15,7 +15,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Content Include="Files\Index.html">
+    <Content Include="Files\index.html">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
   </ItemGroup>
@@ -25,9 +25,6 @@
     <PackageReference Include="LogicReinc.Data" Version="1.0.3" />
   </ItemGroup>
 
-  <ItemGroup>
-    <ProjectReference Include="..\BrokenProtocol.Client\BrokenProtocol.Client.csproj" />
-  </ItemGroup>
 
   <ItemGroup>
     <None Update="Files\Scripts\main.js">
@@ -36,6 +33,11 @@
     <None Update="Files\Styles\main.css">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
+  </ItemGroup>
+
+
+  <ItemGroup>
+    <ProjectReference Include="..\BrokenProtocol.Shared\BrokenProtocol.Shared.csproj" />
   </ItemGroup>
 
 </Project>

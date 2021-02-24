@@ -1,11 +1,9 @@
 ﻿using BrokenProtocol.Server.Data;
-using BrokenProtocol.Server.Data.Models;
 using LogicReinc.Asp.Authentication;
 using Microsoft.AspNetCore.Mvc;
-using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
+using BrokenProtocol.Shared.Models;
 
 namespace BrokenProtocol.Server.Controllers
 {
@@ -56,7 +54,7 @@ namespace BrokenProtocol.Server.Controllers
         /// <summary>
         /// Inform the server that it identified an item with a given color
         /// </summary>
-        /// <param name="color">Color it found (0=black, 1=white)</param>
+        /// <param name="data">Data with Color it found (0=black, 1=white)</param>
         [HttpPost]
         [Authorize]
         public void DeterminedObject([FromBody]ObjectData data)
@@ -81,7 +79,7 @@ namespace BrokenProtocol.Server.Controllers
         /// <summary>
         /// Saves the provided dictionary as sensordata for this device
         /// </summary>
-        /// <param name="sensorData">Data to save to this device</param>
+        /// <param name="log"> Data to log for this user</param>
         /// <returns>The currently saved sensordata</returns>
         [HttpPost]
         [Authorize]

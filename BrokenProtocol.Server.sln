@@ -9,6 +9,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BrokenProtocol.Client", "Br
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BrokenProtocol.Tests", "BrokenProtocol.Tests\BrokenProtocol.Tests.csproj", "{4A0545C5-3A62-46D8-B782-5394C4D28DA5}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BrokenProtocol.Shared", "BrokenProtocol.Shared\BrokenProtocol.Shared.csproj", "{55D75CD9-5013-4B43-8151-911FC3D18A3E}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -27,6 +29,10 @@ Global
 		{4A0545C5-3A62-46D8-B782-5394C4D28DA5}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{4A0545C5-3A62-46D8-B782-5394C4D28DA5}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{4A0545C5-3A62-46D8-B782-5394C4D28DA5}.Release|Any CPU.Build.0 = Release|Any CPU
+		{55D75CD9-5013-4B43-8151-911FC3D18A3E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{55D75CD9-5013-4B43-8151-911FC3D18A3E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{55D75CD9-5013-4B43-8151-911FC3D18A3E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{55D75CD9-5013-4B43-8151-911FC3D18A3E}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
