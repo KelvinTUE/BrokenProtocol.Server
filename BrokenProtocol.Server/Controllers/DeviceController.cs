@@ -47,11 +47,37 @@ namespace BrokenProtocol.Server.Controllers
         public bool PickedUpObject()
         {
             User user = HttpContext.GetAuthenticatedUser();
+
+            if (string.IsNullOrEmpty(user.GroupID) || user.Group == null)
+                return false;
+
+            bool allowed = user.Group?.CanPickup(user) ?? false;
+
             user.Device.TotalCount++;
             user.UpdateActivity();
 
-            return true;
+            return allowed;
         }
+
+        /// <summary>
+        /// Inform the server that the machine put back an item on the feeding belt.
+        /// </summary>
+        /// <returns></returns>
+        [HttpPost]
+        [Authorize]
+        public bool PutBackObject()
+        {
+            User user = HttpContext.GetAuthenticatedUser();
+
+            if (string.IsNullOrEmpty(user.GroupID) || user.Group == null)
+                return false;
+
+            user.Device.TotalCount--;
+            user.UpdateActivity();
+
+            return user.Device.TotalCount >= 0;
+        }
+
 
         /// <summary>
         /// Inform the server that it identified an item with a given color
