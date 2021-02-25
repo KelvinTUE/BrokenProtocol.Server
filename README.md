@@ -22,7 +22,7 @@ Besides HTTP we may also use Websocket for some specific features, however, know
 
 The server will take the form of a standard REST API, you can learn more about how REST APIs work here:
 
-<https://www.youtube.com/watch?v=-MTSQjw5DrM>
+[![](https://img.youtube.com/vi/-MTSQjw5DrM/0.jpg)](https://www.youtube.com/watch?v=-MTSQjw5DrM)
 
 (The first 100 seconds)
 
@@ -36,7 +36,9 @@ All communication with the server is done through individual HTTP requests, mean
 
 Below you will see a simple UML activity diagram on how we expect the usage of the service to work from the device's perspective.
 
-![](https://cloud.dreaminggrid.com/s/Zs7xpppqCY2iZXs/preview)Thus a minimal implementation of the protocol uses only 3 calls. Besides these endpoints you may have to use GET: /Device/Heartbeat or POST: /Device/SensorData to indicate your device is alive if you do not communicate with the server within 5 seconds.
+![](https://raw.githubusercontent.com/KelvinTUE/BrokenProtocol.Server/master/Images/Flowchart.jpg)
+<br />
+Thus a minimal implementation of the protocol uses only 3 calls. Besides these endpoints you may have to use GET: /Device/Heartbeat or POST: /Device/SensorData to indicate your device is alive if you do not communicate with the server within 5 seconds.
 
 ## Additional Functionality
 
@@ -80,7 +82,8 @@ We believe this protocol will provide the basics of whatever machine you want to
 
 ### Feature: Can I place objects back on the belt?
 
-So, we've heard this request a few times, and we even considered it ourselves in our initial machine. However the reason we decided not to use such features was because there will NOT be a physical belt connecting machines. Putting things back on the belt would imply a human picking up the item. So based on this knowledge we decided such a feature would be meaningless, and this, the networking does not provide it. However, if you feel like you really need this feature, we can consider it but we'll have to discuss with staff how this would impact the fairness algorithm since it doesn't make sense in practice. But in our opinion, every item you take is consumed by your machine and won't go back into the system.
+So, we've heard this request a few times, and we even considered it ourselves in our initial machine. However the reason we decided not to use such features was because there will NOT be a physical belt connecting machines. Putting things back on the belt would imply a human picking up the item. So based on this knowledge we decided such a feature would be meaningless, and thus, the networking does not provide it. However, if you feel like you really need this feature, we can consider it but we'll have to discuss with staff how this would impact the fairness algorithm since it doesn't make sense in practice. But in our opinion, every item you take is consumed by your machine and won't go back into the system. <br />
+**UPDATE:** After further requests, we'll be adding another endpoint later allowing you to "put back objects". Documentation will be updated when available.
 
 ### Can I use HTTP instead of HTTPS?
 

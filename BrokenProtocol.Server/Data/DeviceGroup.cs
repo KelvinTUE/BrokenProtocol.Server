@@ -31,5 +31,15 @@ namespace BrokenProtocol.Server.Data
 
             return user.Device.TotalCount == min;
         }
+
+        public override bool Delete()
+        {
+            foreach(User user in Users)
+            {
+                user.GroupID = null;
+                user.Update();
+            }
+            return base.Delete();
+        }
     }
 }
