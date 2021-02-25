@@ -225,6 +225,24 @@ Returns false if this was not expected (thus violating the protocol).
 ```
 auth: "{YourAuthenticationToken}"
 ```
+---
+---
+
+### **POST** /Device/PutBackObject
+
+*Indicates that your device put the object you picked up back on the feeding belt* \
+*NOTE: Feeding belts will not be connected in final demo (so your objects will not move to other machines unless humans move them). But it will affect the fairness algorithm.*
+
+Returns true if this is as expected. \
+Returns false if this was not expected (thus violating the protocol).
+
+##### **HEADERS**
+
+---
+
+```
+auth: "{YourAuthenticationToken}"
+```
 
 ---
 
