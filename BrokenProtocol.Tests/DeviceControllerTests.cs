@@ -14,11 +14,10 @@ namespace BrokenProtocol.Tests
     [TestClass]
     public class DeviceControllerTests
     {
-        private static readonly List<User> users = new List<User>();
-        private static readonly List<DeviceGroup> groups = new List<DeviceGroup>();
         private const int Port = 8888;
         private static readonly string _serverURL = $"http://localhost:{Port}";
 
+        //Setup
         [ClassInitialize]
         public static void SetupServer(TestContext c)
         {
@@ -29,39 +28,16 @@ namespace BrokenProtocol.Tests
             Program.StartServer(Port);
         }
 
-        private static DeviceGroup CreateGroup(int users, string prefix)
+        [ClassCleanup]
+        public static void StopServer()
         {
-            var group = new DeviceGroup
-            {
-                Name = "Test Group"
-            };
-            group.Insert();
+            User.Database.ForEach(u => u.Delete());
+            DeviceGroup.Database.ForEach(g => g.Delete());
 
-            for (int i = 0; i < users; i++)
-            {
-                AttachUserToGroup($"{prefix}_{i}", group);
-            }
-
-            groups.Add(group);
-
-            return group;
+            Program.StopServer();
         }
 
-        private static void AttachUserToGroup(string username, DeviceGroup group)
-        {
-            var user = CreateUser(username);
-
-            user.GroupID = group.ObjectID;
-            user.Update();
-        }
-
-        private static User CreateUser(string username)
-        {
-            var user = new User {Username = username, Password = "password"};
-            user.Insert();
-            users.Add(user);
-            return user;
-        }
+        //Tests
 
         [TestMethod]
         public void TestCorrectLogin()
@@ -160,18 +136,37 @@ namespace BrokenProtocol.Tests
         }
 
 
-        [ClassCleanup]
-        public static void StopServer()
-        {
-            users.ForEach(u =>
-            {
-                u.GroupID = null;
-                u.Update();
-                u.Delete();
-            });
-            groups.ForEach(g => g.Delete());
 
-            Program.StopServer();
+        //Utility
+        private static DeviceGroup CreateGroup(int users, string prefix)
+        {
+            var group = new DeviceGroup
+            {
+                Name = "Test Group"
+            };
+            group.Insert();
+
+            for (int i = 0; i < users; i++)
+            {
+                AttachUserToGroup($"{prefix}_{i}", group);
+            }
+
+            return group;
+        }
+
+        private static void AttachUserToGroup(string username, DeviceGroup group)
+        {
+            var user = CreateUser(username);
+
+            user.GroupID = group.ObjectID;
+            user.Update();
+        }
+
+        private static User CreateUser(string username)
+        {
+            var user = new User { Username = username, Password = "password" };
+            user.Insert();
+            return user;
         }
     }
 }

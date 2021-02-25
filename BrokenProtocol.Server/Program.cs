@@ -21,7 +21,8 @@ namespace BrokenProtocol.Server
         {
             FileIOProvider provider = new FileIOProvider("data");
             User.SetProvider(provider);
-            
+            DeviceGroup.SetProvider(provider);
+
             StartServer(Settings.Instance.Port);
 
             //TODO: Add read timeout to properly handle Ctrl+C

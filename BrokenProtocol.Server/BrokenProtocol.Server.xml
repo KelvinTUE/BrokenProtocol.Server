@@ -20,11 +20,17 @@
             Inform the server that the machine picked up an item
             </summary>
         </member>
-        <member name="M:BrokenProtocol.Server.Controllers.DeviceController.DeterminedObject(BrokenProtocol.Server.Data.Models.ObjectData)">
+        <member name="M:BrokenProtocol.Server.Controllers.DeviceController.PutBackObject">
+            <summary>
+            Inform the server that the machine put back an item on the feeding belt.
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:BrokenProtocol.Server.Controllers.DeviceController.DeterminedObject(BrokenProtocol.Shared.Models.ObjectData)">
             <summary>
             Inform the server that it identified an item with a given color
             </summary>
-            <param name="color">Color it found (0=black, 1=white)</param>
+            <param name="data">Data with Color it found (0=black, 1=white)</param>
         </member>
         <member name="M:BrokenProtocol.Server.Controllers.DeviceController.GetOnlineDevices">
             <summary>
@@ -32,14 +38,14 @@
             </summary>
             <returns>All online devices</returns>
         </member>
-        <member name="M:BrokenProtocol.Server.Controllers.DeviceController.Log(BrokenProtocol.Server.Data.Log)">
+        <member name="M:BrokenProtocol.Server.Controllers.DeviceController.Log(BrokenProtocol.Shared.Models.Log)">
             <summary>
             Saves the provided dictionary as sensordata for this device
             </summary>
-            <param name="sensorData">Data to save to this device</param>
+            <param name="log"> Data to log for this user</param>
             <returns>The currently saved sensordata</returns>
         </member>
-        <member name="M:BrokenProtocol.Server.Controllers.DeviceController.SensorData(BrokenProtocol.Server.Data.SensorData)">
+        <member name="M:BrokenProtocol.Server.Controllers.DeviceController.SensorData(BrokenProtocol.Shared.Models.SensorData)">
             <summary>
             Saves the provided dictionary as sensordata for this device
             </summary>
