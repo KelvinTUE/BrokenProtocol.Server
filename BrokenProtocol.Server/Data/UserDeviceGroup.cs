@@ -16,6 +16,7 @@ namespace BrokenProtocol.Server.Data
     {
         public string Name { get; set; }
         public List<Device> Devices => Users.Select(x => (Device)x.Device).ToList();
+        public List<UserDevice> UserDevices => Users.Select(x => x.Device).ToList();
 
         [JsonIgnore]
         [Newtonsoft.Json.JsonIgnore]

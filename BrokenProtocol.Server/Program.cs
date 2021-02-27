@@ -62,6 +62,7 @@ namespace BrokenProtocol.Server
             _server.AddStaticDirectory("", "Files");
             _server.SetJsonOptions((options) => options.JsonSerializerOptions.PropertyNamingPolicy = null);
             _server.AddEndpoint("index.html", httpContext => httpContext.Response.Redirect("/Index.html"));
+            _server.AddEndpoint("/", httpContext => httpContext.Response.Redirect("/Index.html"));
             _server.AddWebSocketAuthenticated<ManagementSocket>("/ws/ManagementSocket", "ManagementSocket");
 
 

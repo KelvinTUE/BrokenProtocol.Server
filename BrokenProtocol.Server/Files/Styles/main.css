@@ -12,12 +12,14 @@ var(--md-theme-default-accent, #ff5252);
     text-align: center;
 }
 
-.loginPrompt{
-    margin-top: 50px;
-    min-width: 500px;
-    max-width: 30%;
+.loginPrompt {
+    top: calc(50% - 150px);
+    left: calc(50% - 250px);
+    width: 500px;
     height: 300px;
     display: inline-block;
+    position: absolute;
+    background-color: #00000088 !important;
 }
 
 .view .md-app {
@@ -114,4 +116,35 @@ var(--md-theme-default-accent, #ff5252);
 
 .addUserDialog .md-dialog-container{
     min-width: 50%;
+    overflow-y:auto;
 }
+.createVirtualGroupDialog .md-dialog-container {
+    min-width: 40%;
+    overflow-y: auto;
+}
+
+
+
+.dialogForm{
+
+}
+    .dialogForm .formPair {
+        margin-top: 20px;
+    }
+    .dialogForm .formKey {
+        display: inline-block;
+        width: 40%;
+    }
+        .dialogForm .formKey .name {
+            font-size: 20px;
+            font-weight: bold;
+        }
+        .dialogForm .formKey .description {
+            font-size: 12px;
+        }
+    .dialogForm .formValue {
+        display: inline-block;
+        width: 40%;
+        vertical-align: top;
+        margin-left: 5%;
+    }

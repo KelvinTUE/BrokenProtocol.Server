@@ -7,10 +7,10 @@ using BrokenProtocol.Shared.Models;
 
 namespace BrokenProtocol.Shared.Models
 {
-    public class Device
+    public abstract class Device
     {
+        public abstract bool IsOnline { get; }
         public string Name { get; set; }
-
         public int TotalCount { get; set; }
         public ConcurrentDictionary<string, int> ObjectCounts { get; set; } = new ConcurrentDictionary<string, int>();
 

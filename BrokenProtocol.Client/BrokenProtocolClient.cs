@@ -12,19 +12,16 @@ namespace BrokenProtocol.Client
         private readonly string _serverUrl;
         private readonly string _token;
 
-        private WebClient NewClient
+        private WebClient NewClient()
         {
-            get
+            if (_token == null)
             {
-                if (_token == null)
-                {
-                    throw new NullReferenceException("Token is null!");
-                }
-
-                var client = new WebClient { Headers = { [HttpRequestHeader.ContentType] = "application/json" } };
-                client.Headers.Add("auth", _token);
-                return client;
+                throw new NullReferenceException("Token is null!");
             }
+
+            var client = new WebClient { Headers = { [HttpRequestHeader.ContentType] = "application/json" } };
+            client.Headers.Add("auth", _token);
+            return client;
         }
 
         private BrokenProtocolClient(string serverUrl, string token)
@@ -36,7 +33,7 @@ namespace BrokenProtocol.Client
 
         public bool CanPickup()
         {
-            using (WebClient client = NewClient)
+            using (WebClient client = NewClient())
             {
                 return JsonSerializer.Deserialize<bool>(
                     client.DownloadString($"{_serverUrl}/Device/{nameof(CanPickup)}"));
@@ -45,7 +42,7 @@ namespace BrokenProtocol.Client
 
         public void Heartbeat()
         {
-            using (WebClient client = NewClient)
+            using (WebClient client = NewClient())
             {
                 client.DownloadString($"{_serverUrl}/Device/{nameof(Heartbeat)}");
             }
@@ -53,7 +50,7 @@ namespace BrokenProtocol.Client
 
         public bool PickedUpObject()
         {
-            using (WebClient client = NewClient)
+            using (WebClient client = NewClient())
             {
                 return JsonSerializer.Deserialize<bool>(
                     client.UploadString($"{_serverUrl}/Device/{nameof(PickedUpObject)}", "POST", ""));
@@ -62,7 +59,7 @@ namespace BrokenProtocol.Client
 
         public void DeterminedObject(ObjectData data)
         {
-            using (WebClient client = NewClient)
+            using (WebClient client = NewClient())
             {
                 client.UploadString($"{_serverUrl}/Device/{nameof(DeterminedObject)}", "POST",
                     JsonSerializer.Serialize(data));
@@ -71,7 +68,7 @@ namespace BrokenProtocol.Client
 
         public void Log(Log log)
         {
-            using (WebClient client = NewClient)
+            using (WebClient client = NewClient())
             {
                 client.UploadString($"{_serverUrl}/Device/{nameof(Log)}", "POST",
                     JsonSerializer.Serialize(log));
@@ -80,7 +77,7 @@ namespace BrokenProtocol.Client
 
         public void SendSensorData(SensorData sensorData)
         {
-            using (WebClient client = NewClient)
+            using (WebClient client = NewClient())
             {
                 client.UploadString($"{_serverUrl}/Device/{nameof(Log)}", "POST",
                     JsonSerializer.Serialize(sensorData));

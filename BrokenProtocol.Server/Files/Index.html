@@ -26,6 +26,9 @@
                         <md-button @click="login()">Login</md-button>
                     </md-card-actions>
                 </md-card>
+                <div style="position: fixed; width: 100%; height: 100%; top: 0px; left: 0px; background: url('https://images.pexels.com/photos/3785931/pexels-photo-3785931.jpeg?crop=entropy&cs=srgb&dl=pexels-miguel-%C3%A1-padri%C3%B1%C3%A1n-3785931.jpg&fit=crop&fm=jpg&h=1276&w=1920'); background-size: cover;">
+
+                </div>
             </div>
             <div class="view main" v-if="View == 'Main'">
                 <md-app>
@@ -39,7 +42,7 @@
                         <div style="display: inline-block">
                             Welcome, {{User.Name}}
                         </div>
-                        <md-button>Logout</md-button>
+                        <md-button @click="navigate('/Index.html')">Logout</md-button>
                     </md-app-toolbar>
 
                     <!--Drawer-->
@@ -113,28 +116,112 @@
                                     </md-card-content>
 
                                 </md-card>
-                                <md-card class="spaced">
+                                <md-card class="spaced" v-if="!Group">
                                     <md-card-header>
                                         <div class="md-title">Current Group</div>
                                     </md-card-header>
                                     <md-card-content>
-                                        <div v-if="!Group">
+                                        <div>
                                             <b style="color: orange;">You are currently not assigned to any group by a moderator. </b>
                                             <br /><br />
 
                                             Would you like to set up a virtual group? <br />
-                                            <md-button class="md-raised md-accent" @click="createVirtualGroup()">Create Virtual Group</md-button>
-                                        </div>
-                                        <div v-if="Group">
-                                            <device-group :group="Group"></device-group>
+                                            <md-button class="md-raised md-accent" @click="createVirtualGroupDialog.Show = true">Create Virtual Group</md-button>
                                         </div>
                                     </md-card-content>
                                 </md-card>
+
+                                <div v-if="Group" class="spaced">
+                                    <device-group :group="Group"></device-group>
+                                </div>
                             </div>
 
                             <div class="sideBoxes">
                                 <device-box class="sideBox" :device="Device"></device-box>
                             </div>
+
+                            <md-dialog :md-active.sync="createVirtualGroupDialog.Show" class="createVirtualGroupDialog">
+                                <md-dialog-title>Create Virtual Group</md-dialog-title>
+
+                                <div style="margin: 25px; margin-top: -15px;">
+                                    <p style="color: orange">
+                                        Note that virtual groups are deleted after 15 minutes or when the server restarts. They are not persistent.
+                                    </p>
+                                    <div class="dialogForm">
+                                        <div class="formPair">
+                                            <div class="formKey">
+                                                <div class="name">
+                                                    Allow Offline Pickup
+                                                </div>
+                                                <div class="description">
+                                                    If this checkbox is checked, it will allow Virtual Devices to pickup objects even when your device is offline.
+                                                </div>
+                                            </div>
+                                            <md-checkbox class="formValue" v-model="createVirtualGroupDialog.Options.AllowOfflinePickup"></md-checkbox>
+                                        </div>
+                                        <div class="formPair">
+                                            <div class="formKey">
+                                                <div class="name">
+                                                    Time Between Objects
+                                                </div>
+                                                <div class="description">
+                                                    The time between each object moving in front of the virtual device.
+                                                </div>
+                                            </div>
+                                            <md-field class="formValue">
+                                                <label for="objTime">Time between Objects</label>
+                                                <md-input type="number" name="objTime" v-model.number="createVirtualGroupDialog.Options.SecondsObjects" />
+                                            </md-field>
+                                        </div>
+                                        <div class="formPair">
+                                            <div class="formKey">
+                                                <div class="name">
+                                                    Time to Pickup
+                                                </div>
+                                                <div class="description">
+                                                    The time it takes a virtual device to pick up an item it is allowed to pick up.
+                                                </div>
+                                            </div>
+                                            <md-field class="formValue">
+                                                <label for="objTime">Time between Objects</label>
+                                                <md-input type="number" name="objTime" v-model.number="createVirtualGroupDialog.Options.SecondsPickup" />
+                                            </md-field>
+                                        </div>
+                                        <div class="formPair">
+                                            <div class="formKey">
+                                                <div class="name">
+                                                    Time to Determine Color
+                                                </div>
+                                                <div class="description">
+                                                    The time it takes a virtual device to determine the color of a picked up item.
+                                                </div>
+                                            </div>
+                                            <md-field class="formValue">
+                                                <label for="objTime">Time between Objects</label>
+                                                <md-input type="number" name="objTime" v-model.number="createVirtualGroupDialog.Options.SecondsDetermine" />
+                                            </md-field>
+                                        </div>
+                                        <div class="formPair">
+                                            <div class="formKey">
+                                                <div class="name">
+                                                    Device Time Variance
+                                                </div>
+                                                <div class="description">
+                                                    This randomly modifies each device's timings by at mos this many seconds.
+                                                </div>
+                                            </div>
+                                            <md-field class="formValue">
+                                                <label for="objTime">Time Variance</label>
+                                                <md-input type="number" name="objTime" v-model.number="createVirtualGroupDialog.Options.SecondsVariance" />
+                                            </md-field>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <md-dialog-actions>
+                                    <md-button class="md-primary" @click="createVirtualGroup(createVirtualGroupDialog.Options)">Create Virtual Group</md-button>
+                                </md-dialog-actions>
+                            </md-dialog>
                         </div>
                         <!--My Device View-->
                         <div class="appContent device" v-if="MainContent == 'Device'">
@@ -200,7 +287,7 @@
                                         </div>
                                     </md-card-content>
                                     <md-card-actions>
-                                        <md-button class="md-primary" @click="createUser()" 
+                                        <md-button class="md-primary" @click="createUser()"
                                                    :disabled="!NewUser.Username || NewUser.Username.length < 2 || !NewUser.Password || NewUser.Password.length < 6 || !NewUser.DeviceName || NewUser.DeviceName.length < 4">
                                             Create User
                                         </md-button>
@@ -231,10 +318,9 @@
                                         <md-button class="md-primary" @click="createGroup()" :disabled="!NewGroup.Name || NewGroup.Name.length < 2">Create Group</md-button>
                                     </md-card-actions>
                                 </md-card>
-                                <group-listing 
-                                               v-for="group in Groups" 
-                                               :group="group" 
-                                               @add-user="showAddUserDialog(group)" 
+                                <group-listing v-for="group in Groups"
+                                               :group="group"
+                                               @add-user="showAddUserDialog(group)"
                                                @group-changed="updateGroups(); updateUsers();"
                                                :show-options="true"></group-listing>
 
@@ -253,7 +339,7 @@
                                             </md-field>
                                         </div>
                                         <div style="max-height: 300px; overflow-y: auto;">
-                                            <md-card v-for="user in Users" 
+                                            <md-card v-for="user in Users"
                                                      v-if="!isUserInGroup(user.ObjectID, addUserDialog.Group) && user.Name.toLowerCase().indexOf(addUserDialog.Filter.toLowerCase()) >= 0"
                                                      style="margin: 5px;">
                                                 <md-card-content>
@@ -269,7 +355,7 @@
                                                         </div>
                                                     </div>
                                                 </md-card-content>
-                                                <md-card-actions>
+                                                <md-card-actions style="margin-top: -45px;">
                                                     <md-button class="md-primary" @click="addUserToGroup(user.ObjectID, addUserDialog.Group.ObjectID)">Add To Group</md-button>
                                                 </md-card-actions>
                                             </md-card>
@@ -281,13 +367,6 @@
                                     <md-button class="md-primary" @click="addUserDialog.Show = false">Done</md-button>
                                 </md-dialog-actions>
                             </md-dialog>
-                        </div>
-                        <!--Group View-->
-                        <div class="appContent device" v-if="MainContent == 'Group'">
-                            <div>
-                                <h1>Group</h1>
-
-                            </div>
                         </div>
                     </md-app-content>
                 </md-app>
@@ -306,22 +385,50 @@
                         <div class="md-title">Group {{group.Name}}</div>
                     </md-card-header>
                     <md-card-content>
-                        <div class="deviceContainer">
-                            <div class="device" v-for="device in group.Device">
-                                <div class="deviceName">
-                                    {{device.Name}}
-                                </div>
-                                <div class="deviceConsumed">
-                                    {{device.TotalCount}}
-                                </div>
-                                <div class="deviceWhite">
-                                    {{device.ObjectCounts["1"]}}
-                                </div>
-                                <div class="deviceBlack">
-                                    {{device.ObjectCounts["0"]}}
-                                </div>
-                            </div>
+                        <div class="deviceContainer" style="text-align: center;">
+                            <md-card class="device" v-for="device in group.Devices" style="display: inline-block; margin: 10px; width: 40%;">
+                                <md-card-header>
+                                    <div class="md-title">{{device.Name}}</div>
+                                </md-card-header>
+                                <md-card-content>
+                                    <div class="status" style="position: absolute; top:20px; right: 20px;">
+                                        <md-icon style="color: green;" v-if="device.IsOnline">
+                                            circle
+                                        </md-icon>
+                                        <md-icon style="color: red;" v-if="!device.IsOnline">
+                                            circle
+                                        </md-icon>
+                                    </div>
+                                    <md-table>
+                                        <md-table-row>
+                                            <md-table-cell>
+                                                Consumed
+                                            </md-table-cell>
+                                            <md-table-cell>
+                                                {{device.TotalCount}}
+                                            </md-table-cell>
+                                        </md-table-row>
+                                        <md-table-row>
+                                            <md-table-cell>
+                                                White
+                                            </md-table-cell>
+                                            <md-table-cell>
+                                                {{device.ObjectCounts.White}}
+                                            </md-table-cell>
+                                        </md-table-row>
+                                        <md-table-row>
+                                            <md-table-cell>
+                                                Black
+                                            </md-table-cell>
+                                            <md-table-cell>
+                                                {{device.ObjectCounts.Black}}
+                                            </md-table-cell>
+                                        </md-table-row>
+                                    </md-table>
+                                </md-card-content>
+                            </md-card>
                         </div>
+                        <device-chart :group="group" style="height: 200px;"></device-chart>
                     </md-card-content>
                     <md-card-actions v-if="group.IsVirtual">
                         <md-button class="md-accent" @click="deleteVirtualGroup()">Delete Virtual Group</md-button>
@@ -370,10 +477,10 @@
                                 {{group.ObjectID}}
                             </div>
                         </div>
-                        <div class="groupMembers" v-if="group.Devices && group.Devices.length > 0">
-                            <md-chip class="md-primary" 
-                                     :md-deletable="showOptions" 
-                                     v-for="member in group.Devices"
+                        <div class="groupMembers" v-if="group.UserDevices && group.UserDevices.length > 0">
+                            <md-chip class="md-primary"
+                                     :md-deletable="showOptions"
+                                     v-for="member in group.UserDevices"
                                      @md-delete="deleteUser(member.UserID)">
                                 {{member.Name}}
                             </md-chip>
@@ -427,12 +534,15 @@
                     <div class="md-title">Sensor Data</div>
                 </md-card-header>
                 <md-card-content>
-                    <md-table>
+                    <md-table v-if="device && device.Sensors">
                         <md-table-row v-for="(value, key) in device.Sensors">
                             <md-table-cell class="key">{{key}}</md-table-cell>
                             <md-table-cell>{{value}}</md-table-cell>
                         </md-table-row>
                     </md-table>
+                    <div v-if="!device || !device.Sensors">
+                        No Sensor Data
+                    </div>
                 </md-card-content>
             </md-card>
 
@@ -455,6 +565,8 @@
         <script src="https://unpkg.com/vue"></script>
         <script src="https://unpkg.com/vue"></script>
         <script src="https://unpkg.com/vue-material"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.7.1/Chart.min.js"></script>
+        <script src="https://unpkg.com/vue-chartjs/dist/vue-chartjs.min.js"></script>
         <script src="Scripts/main.js"></script>
 
     </body>

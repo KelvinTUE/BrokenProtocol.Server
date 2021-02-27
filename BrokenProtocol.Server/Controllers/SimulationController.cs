@@ -1,4 +1,5 @@
 ﻿using BrokenProtocol.Server.Data;
+using BrokenProtocol.Server.Simulation;
 using LogicReinc.Asp.Authentication;
 using Microsoft.AspNetCore.Mvc;
 using System;
@@ -12,11 +13,14 @@ namespace BrokenProtocol.Server.Controllers
     {
         [HttpPost]
         [Authorize]
-        public bool CreateVirtualGroup()
+        public bool CreateVirtualGroup([FromBody]VirtualGroupOptions options)
         {
             User user = HttpContext.GetAuthenticatedUser();
 
-            user.CreateVirtualGroup(TimeSpan.FromMinutes(15));
+            if (options == null)
+                options = new VirtualGroupOptions();
+
+            user.CreateVirtualGroup(options, TimeSpan.FromMinutes(15));
 
             return true;
         }

@@ -112,7 +112,7 @@ namespace BrokenProtocol.Server.Controllers
         [Authorize]
         public List<UserDeviceModel> GetOnlineDevices()
         {
-            return Data.User.Database.Where(x => x.IsOnline).Select(x=>x.GetDevice()).ToList();
+            return Data.User.Database.Where(x => x.Device?.IsOnline ?? false).Select(x=>x.GetDevice()).ToList();
         }
 
         /// <summary>

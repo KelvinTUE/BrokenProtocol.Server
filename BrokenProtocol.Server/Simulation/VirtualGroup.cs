@@ -18,6 +18,8 @@ namespace BrokenProtocol.Server.Simulation
 
         public string Name => "Virtual";
 
+        public VirtualGroupOptions Options { get; set; }
+
         public Device Device => _user?.Device;
         public List<FakeDevice> FakeDevices { get; set; } = new List<FakeDevice>();
 
@@ -27,12 +29,13 @@ namespace BrokenProtocol.Server.Simulation
 
         private IGroupRules Rules = new BasicRules();
 
-        public VirtualGroup(User user, TimeSpan validity)
+        public VirtualGroup(User user, VirtualGroupOptions options, TimeSpan validity)
         {
             _user = user;
-            FakeDevices.Add(new FakeDevice(this));
-            FakeDevices.Add(new FakeDevice(this));
-            FakeDevices.Add(new FakeDevice(this));
+            Options = options;
+            FakeDevices.Add(new FakeDevice("Virtual1", this));
+            FakeDevices.Add(new FakeDevice("Virtual2", this));
+            FakeDevices.Add(new FakeDevice("Virtual3", this));
             Expiration = DateTime.Now.Add(validity);
         }
 

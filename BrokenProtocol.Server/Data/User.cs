@@ -18,16 +18,11 @@ namespace BrokenProtocol.Server.Data
     [UnifiedCollection("Users")]
     public class User : UnifiedIMObject<User>, IAuthUser
     {
-        private static readonly TimeSpan ACTIVITY_TIMEOUT = TimeSpan.FromSeconds(5);
-
         private static Random _random = new Random();
         private const int PASSWORD_LENGTH = 32;
 
         [UnifiedIMIndex]
         public string Username { get; set; }
-
-        public DateTime LastActivity { get; set; }
-        public bool IsOnline => DateTime.Now.Subtract(LastActivity) < ACTIVITY_TIMEOUT;
 
         public string GroupID { get; set; }
 
@@ -47,7 +42,7 @@ namespace BrokenProtocol.Server.Data
         public string Password { get; set; }
 
 
-        public List<string> Roles { get; set; }
+        public List<string> Roles { get; set; } = new List<string>();
 
         //Socket
         public void AddClient(ManagementSocket socket)
@@ -93,8 +88,8 @@ namespace BrokenProtocol.Server.Data
         {
             Send(ManagementMessage.FromObject(new UserStatus()
             {
-                Online = IsOnline,
-                LastActivity = LastActivity
+                Online = Device?.IsOnline ?? false,
+                LastActivity = Device?.LastActivity ?? DateTime.MinValue
             }));
         }
 
@@ -103,19 +98,23 @@ namespace BrokenProtocol.Server.Data
             Send(new ManagementMessage()
             {
                 Type = "GroupStatus",
-                Data = Group
+                Data = GetActiveGroup()
             });
         }
 
         //Others
         public IGroup GetActiveGroup()
         {
-            return (IGroup)Group ?? VirtualGroup;
+            IGroup group = null;
+            if (GroupID != null)
+                group = Group;
+
+            return group ?? VirtualGroup;
         }
 
-        public void CreateVirtualGroup(TimeSpan expiration)
+        public void CreateVirtualGroup(VirtualGroupOptions options, TimeSpan expiration)
         {
-            VirtualGroup = new VirtualGroup(this, expiration);
+            VirtualGroup = new VirtualGroup(this, options, expiration);
         }
         public void DeleteVirtualGroup()
         {
@@ -144,7 +143,9 @@ namespace BrokenProtocol.Server.Data
 
         public void UpdateActivity()
         {
-            LastActivity = DateTime.Now;
+            if(Device != null)
+                Device.LastActivity = DateTime.Now;
+            
             Update();
         }
 
@@ -191,7 +192,7 @@ namespace BrokenProtocol.Server.Data
 
         public string[] GetRoles()
         {
-            return Roles.ToArray();
+            return Roles?.ToArray() ?? new string[0];
         }
 
         public string GetID()
@@ -204,7 +205,7 @@ namespace BrokenProtocol.Server.Data
             return new UserModel()
             {
                 GroupID = GroupID,
-                GroupName = Group?.Name,
+                GroupName = (GroupID != null ? Group : null)?.Name,
                 DeviceName = Device?.Name,
                 Name = Username,
                 ObjectID = ObjectID

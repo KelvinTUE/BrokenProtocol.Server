@@ -3,6 +3,88 @@ Vue.use(VueMaterial.default);
 
 var api = new SyncAPI(SYNC_CONFIG);
 
+Vue.component('device-chart', {
+    props: ["group"],//["labels", "consumed", "white", "black"],
+    extends: VueChartJs.Bar,
+    data: () => {
+        return {
+            chartObj: {
+                labels: [],
+                datasets: [
+                    {
+                        label: "Consumed",
+                        backgroundColor: '#2E7D32',
+                        data: []
+                    },
+                    {
+                        label: "Black",
+                        backgroundColor: 'black',
+                        data: []
+                    },
+                    {
+                        label: "White",
+                        backgroundColor: 'white',
+                        data: []
+                    }
+                ]
+            },
+            chartOptions: {
+                scales: {
+                    yAxes: [{
+                        ticks: {
+                            beginAtZero: true
+                        }
+                    }]
+                },
+                responsive: true,
+                maintainAspectRatio: false,
+                animation: false
+            }
+        };
+    },
+    mounted() {
+        this.updateData();
+        this.renderChart(this.chartObj, this.chartOptions);
+    },
+    methods: {
+        updateData() {
+            var val = this.group;
+            var labels = this.chartObj.labels;
+            var consumed = this.chartObj.datasets[0].data;
+            var black = this.chartObj.datasets[1].data;
+            var white = this.chartObj.datasets[2].data;
+            labels.splice(0, labels.length);
+            consumed.splice(0, consumed.length);
+            black.splice(0, black.length);
+            white.splice(0, white.length);
+            if (val && val.Devices) {
+                for (var i = 0; i < val.Devices.length; i++) {
+                    var dev = val.Devices[i];
+                    labels.push(dev.Name);
+                    consumed.push(dev.TotalCount);
+                    if (dev.ObjectCounts.White)
+                        white.push(dev.ObjectCounts.White);
+                    else
+                        white.push(0);
+                    if (dev.ObjectCounts.Black)
+                        black.push(dev.ObjectCounts.Black);
+                    else
+                        black.push(0);
+                }
+            }
+        },
+        render() {
+            //this._data._chart.update()
+            this.renderChart(this.chartObj, this.chartOptions);
+        }
+    },
+    watch: {
+        group(val) {
+            this.updateData();
+            this.render();
+        }
+    }
+});
 
 Vue.component("deviceBox", {
     props: ["device"],
@@ -18,7 +100,6 @@ Vue.component("terminal", {
     props: ["device", "blacklist"],
     data: function() {
         return {
-
         }
     },
     methods: {
@@ -43,7 +124,6 @@ Vue.component("deviceGroup", {
     props: ["group"],
     data: function () {
         return {
-
         };
     },
     methods: {
@@ -196,7 +276,7 @@ new Vue({
             InProgress: false
         },
 
-        Group: {},
+        Group: undefined,
 
         MainContent: "Dashboard",
 
@@ -209,11 +289,21 @@ new Vue({
                 Devices: []
             }
         },
+        createVirtualGroupDialog: {
+            Show: false,
+            Options: {
+                AllowOfflinePickup: false,
+                SecondsObjects: 3,
+                SecondsPickup: 1,
+                SecondsDetermine: 2,
+                SecondsVariance: 1
+            }
+        },
 
         snackPosition: "center",
         snackDuration: 4000,
         snackMessage: "",
-        snackActive: false
+        snackActive: false,
     },
     methods: {
         login() {
@@ -291,11 +381,9 @@ new Vue({
                         });
                     break;
                 case "GroupStatus":
-                    if (msg.Data) {
-                        Vue.nextTick(() => {
-                            this.Group = msg.Data;
-                        });
-                    }
+                    Vue.nextTick(() => {
+                        this.Group = msg.Data;
+                    });
                     break;
                 case "UserStatus":
                     if (msg.Data) {
@@ -336,6 +424,9 @@ new Vue({
         toGroup() {
             this.toView("Group");
         },
+        navigate(url) {
+            window.location.href = url
+        },
 
         showAddUserDialog(group) {
             this.addUserDialog.Group = group;
@@ -346,11 +437,15 @@ new Vue({
             this.snackActive = true;
         },
 
-        createVirtualGroup() {
-            api.Simulation.CreateVirtualGroup("", (data, err) => {
+        createVirtualGroup(options) {
+            api.Simulation.CreateVirtualGroup(options, (data, err) => {
                 Vue.nextTick(() => {
                     if (data && !err) {
+                        this.createVirtualGroupDialog.Show = false;
                         this.showMessage("Virtual Group created, wait for server feedback");
+                    }
+                    else {
+                        this.showMessage("Virtual Group creation failed: " + err);
                     }
                 });
             });

@@ -14,26 +14,39 @@ namespace BrokenProtocol.Server.Simulation
     }
     public class FakeDevice : Device
     {
+        public override bool IsOnline => true;
+
         private static Random _random = new Random();
         private static ObjectColor[] _colors = new ObjectColor[] { ObjectColor.Black, ObjectColor.White }; 
 
         private VirtualGroup Group { get; set; }
 
-        private TimeSpan ObjectInterval { get; set; } = TimeSpan.FromSeconds(_random.Next(2, 4));
+        private TimeSpan ObjectInterval { get; set; }
         private DateTime LastObject { get; set; } = DateTime.Now;
 
-        private TimeSpan PickupInterval { get; set; } = TimeSpan.FromSeconds(_random.Next(1, 3));
+        private TimeSpan PickupInterval { get; set; }
         private DateTime PickupTime { get; set; } = DateTime.Now;
 
-        private TimeSpan DetermineInterval { get; set; } = TimeSpan.FromSeconds(_random.Next(2, 4));
+        private TimeSpan DetermineInterval { get; set; }
         private DateTime DetermineTime { get; set; } = DateTime.Now;
-
 
         private DeviceState State { get; set; } = DeviceState.CheckPickup;
 
-        public FakeDevice(VirtualGroup group)
+        private VirtualGroupOptions _options = null;
+
+        public FakeDevice(string name, VirtualGroup group)
         {
+            Name = name;
             Group = group;
+            _options = group.Options;
+
+            int obj = Math.Max(1, _options.SecondsObjects);
+            int pickup = Math.Max(1, _options.SecondsPickup);
+            int determine = Math.Max(1, _options.SecondsDetermine);
+
+            ObjectInterval = TimeSpan.FromSeconds(_random.Next(obj, obj + _options.SecondsVariance + 1));
+            PickupInterval = TimeSpan.FromSeconds(_random.Next(pickup, pickup + _options.SecondsVariance + 1));
+            DetermineInterval = TimeSpan.FromSeconds(_random.Next(determine, determine + _options.SecondsVariance + 1));
         }
 
         public void DoEvents()
@@ -42,7 +55,8 @@ namespace BrokenProtocol.Server.Simulation
             switch (State)
             {
                 case DeviceState.CheckPickup:
-                    CheckPickup(objectAvailable);
+                    if(_options.AllowOfflinePickup || Group.Device.IsOnline)
+                        CheckPickup(objectAvailable);
                     break;
                 case DeviceState.Pickup:
                     Pickup();
@@ -55,7 +69,7 @@ namespace BrokenProtocol.Server.Simulation
 
         private bool UpdateObjectBelt()
         {
-            if (ObjectInterval > DateTime.Now.Subtract(LastObject))
+            if (ObjectInterval < DateTime.Now.Subtract(LastObject))
             {
                 LastObject = DateTime.Now;
                 return true;

@@ -1,5 +1,7 @@
+using System;
 using System.Collections.Generic;
 using System.Net;
+using System.Threading;
 using BrokenProtocol.Client;
 using BrokenProtocol.Server.Data;
 using BrokenProtocol.Shared.Models;
@@ -25,14 +27,15 @@ namespace BrokenProtocol.Tests
             User.SetProvider(provider);
             UserDeviceGroup.SetProvider(provider);
 
+            ClearDatabase();
+
             Program.StartServer(Port);
         }
 
         [ClassCleanup]
         public static void StopServer()
         {
-            User.Database.ForEach(u => u.Delete());
-            UserDeviceGroup.Database.ForEach(g => g.Delete());
+            ClearDatabase();
 
             Program.StopServer();
         }
@@ -123,9 +126,15 @@ namespace BrokenProtocol.Tests
         [TestMethod]
         public void TestSimplePickupGroup()
         {
-            CreateGroup(2, "group_pickup");
-            var clientOne = BrokenProtocolClient.Login(_serverURL, "group_pickup_0", "password");
-            var clientTwo = BrokenProtocolClient.Login(_serverURL, "group_pickup_1", "password");
+            AppDomain.CurrentDomain.FirstChanceException += (a, b) =>
+            {
+                object msg = b;
+            };
+
+            string groupName = "group_pickup";
+            CreateGroup(2, groupName);
+            var clientOne = BrokenProtocolClient.Login(_serverURL, groupName + "_0", "password");
+            var clientTwo = BrokenProtocolClient.Login(_serverURL, groupName + "_1", "password");
             Assert.IsTrue(clientOne.CanPickup());
             Assert.IsTrue(clientTwo.CanPickup());
 
@@ -167,6 +176,16 @@ namespace BrokenProtocol.Tests
             var user = new User { Username = username, Password = "password" };
             user.Insert();
             return user;
+        }
+
+
+
+        private static void ClearDatabase()
+        {
+            foreach (User user in User.Database.ToList())
+                user.Delete();
+            foreach(UserDeviceGroup group in UserDeviceGroup.Database.ToList())
+                group.Delete();
         }
     }
 }

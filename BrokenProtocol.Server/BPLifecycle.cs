@@ -29,20 +29,17 @@ namespace BrokenProtocol.Server
             }
         }
 
-        [LifeCycleAction(1000)]
+        [LifeCycleAction(3000)]
         public void PushGroupStatus()
         {
             foreach(User user in User.Database.ToList())
             {
                 try
                 {
-                    if (user.IsOnline)
+                    if (user.HasClients())
                     {
                         IGroup group = user.GetActiveGroup();
-                        if(group != null)
-                        {
-                            user.PushGroupStatus();
-                        }
+                        user.PushGroupStatus();
                     }
                 }
                 catch(Exception ex)
