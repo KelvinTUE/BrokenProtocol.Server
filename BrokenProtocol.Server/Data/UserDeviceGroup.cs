@@ -1,4 +1,6 @@
-﻿using LogicReinc.Collections;
+﻿using BrokenProtocol.Server.Rules;
+using BrokenProtocol.Shared.Models;
+using LogicReinc.Collections;
 using LogicReinc.Data.Unified;
 using LogicReinc.Data.Unified.Attributes;
 using System;
@@ -10,26 +12,28 @@ using System.Text.Json.Serialization;
 namespace BrokenProtocol.Server.Data
 {
     [UnifiedCollection("DeviceGroups")]
-    public class DeviceGroup : UnifiedIMObject<DeviceGroup>
+    public class UserDeviceGroup : UnifiedIMObject<UserDeviceGroup>, IGroup
     {
         public string Name { get; set; }
-        public List<Device> Devices => Users.Select(x => x.Device).ToList();
+        public List<Device> Devices => Users.Select(x => (Device)x.Device).ToList();
 
         [JsonIgnore]
         [Newtonsoft.Json.JsonIgnore]
         [UnifiedIMReference(nameof(ObjectID), typeof(User), nameof(User.GroupID))]
         public TSList<User> Users { get; set; } = new TSList<User>();
 
+        public bool IsVirtual => false;
 
+        private IGroupRules _rules = new BasicRules();
 
-        public bool CanPickup(User user)
+        public bool CanPickup(Device device)
         {
             if (Users.Length == 0)
                 return false;
+            if (!Devices.Contains(device))
+                return false;
 
-            int min = Users.Min(x => x.Device.TotalCount);
-
-            return user.Device.TotalCount == min;
+            return _rules.CanPickup(Devices.Cast<Device>().ToList(), device);
         }
 
         public override bool Delete()

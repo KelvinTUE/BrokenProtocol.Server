@@ -12,6 +12,7 @@
 
   <ItemGroup>
     <None Remove="Files\Index.html" />
+    <None Remove="Files\Index.html~RF5be4c0e.TMP" />
   </ItemGroup>
 
   <ItemGroup>

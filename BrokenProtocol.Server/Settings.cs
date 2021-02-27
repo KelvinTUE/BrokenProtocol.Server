@@ -10,7 +10,7 @@ namespace BrokenProtocol.Server
     {
         private const string SETTINGS_FILE = "Settings";
         
-        public int Port { get; set; } = 8080;
+        public int Port { get; set; } = 80;
 
 
         #region BoilerPlate

@@ -34,7 +34,9 @@ namespace BrokenProtocol.Server.Controllers
             User user = HttpContext.GetAuthenticatedUser();
             user.UpdateActivity();
 
-            return user.Group?.CanPickup(user) ?? false;
+            IGroup group = user.GetActiveGroup();
+
+            return group?.CanPickup(user.Device) ?? false;
         }
 
         /// <summary>
@@ -46,10 +48,12 @@ namespace BrokenProtocol.Server.Controllers
         {
             User user = HttpContext.GetAuthenticatedUser();
 
-            if (string.IsNullOrEmpty(user.GroupID) || user.Group == null)
+            IGroup group = user?.GetActiveGroup();
+
+            if (group == null)
                 return false;
 
-            bool allowed = user.Group?.CanPickup(user) ?? false;
+            bool allowed = user.GetActiveGroup()?.CanPickup(user?.Device) ?? false;
 
             user.Device.TotalCount++;
             user.UpdateActivity();
@@ -67,7 +71,9 @@ namespace BrokenProtocol.Server.Controllers
         {
             User user = HttpContext.GetAuthenticatedUser();
 
-            if (string.IsNullOrEmpty(user.GroupID) || user.Group == null)
+            IGroup group = user?.GetActiveGroup();
+
+            if (group == null)
                 return false;
 
             user.Device.TotalCount--;
@@ -83,11 +89,18 @@ namespace BrokenProtocol.Server.Controllers
         /// <param name="data">Data with Color it found (0=black, 1=white)</param>
         [HttpPost]
         [Authorize]
-        public void DeterminedObject([FromBody]ObjectData data)
+        public bool DeterminedObject([FromBody]ObjectData data)
         {
             User user = HttpContext.GetAuthenticatedUser();
+
+            IGroup group = user?.GetActiveGroup();
+            if (group == null)
+                return false;
+
             user.Device.IncrementColor(data.Color);
             user.UpdateActivity();
+
+            return true;
         }
 
 
@@ -97,7 +110,7 @@ namespace BrokenProtocol.Server.Controllers
         /// <returns>All online devices</returns>
         [HttpGet]
         [Authorize]
-        public List<UserDevice> GetOnlineDevices()
+        public List<UserDeviceModel> GetOnlineDevices()
         {
             return Data.User.Database.Where(x => x.IsOnline).Select(x=>x.GetDevice()).ToList();
         }

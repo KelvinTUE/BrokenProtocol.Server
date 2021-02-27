@@ -67,6 +67,14 @@
                                 <md-icon>build</md-icon>
                                 <span class="md-list-item-text">My Device</span>
                             </md-list-item>
+                            <md-list-item @click="toUsers" v-if="User.IsAdmin">
+                                <md-icon>people</md-icon>
+                                <span class="md-list-item-text">Users</span>
+                            </md-list-item>
+                            <md-list-item @click="toGroups" v-if="User.IsAdmin">
+                                <md-icon>group_work</md-icon>
+                                <span class="md-list-item-text">Groups</span>
+                            </md-list-item>
                         </md-list>
                     </md-app-drawer>
 
@@ -110,11 +118,16 @@
                                         <div class="md-title">Current Group</div>
                                     </md-card-header>
                                     <md-card-content>
-                                        <b style="color: orange;">You are currently not assigned to any group by a moderator. </b>
-                                        <br /><br />
+                                        <div v-if="!Group">
+                                            <b style="color: orange;">You are currently not assigned to any group by a moderator. </b>
+                                            <br /><br />
 
-                                        Would you like to set up a virtual group? <br />
-                                        <md-button class="md-raised md-accent">Create Virtual Group</md-button>
+                                            Would you like to set up a virtual group? <br />
+                                            <md-button class="md-raised md-accent" @click="createVirtualGroup()">Create Virtual Group</md-button>
+                                        </div>
+                                        <div v-if="Group">
+                                            <device-group :group="Group"></device-group>
+                                        </div>
                                     </md-card-content>
                                 </md-card>
                             </div>
@@ -152,10 +165,228 @@
                                 <sensor-box class="sideBox" :device="Device"></sensor-box>
                             </div>
                         </div>
+                        <!--Users View-->
+                        <div class="appContent device" v-if="MainContent == 'Users'">
+                            <div>
+                                <h1>Users</h1>
+                                <md-card>
+                                    <md-card-header>
+                                        <div class="md-title">Create User</div>
+                                    </md-card-header>
+                                    <md-card-content>
+                                        <div>
+                                            <div class="md-layout md-gutter" style="margin:20px;">
+                                                <div class="md-layout-item md-small-size-100">
+                                                    <md-field>
+                                                        <label for="username">Username</label>
+                                                        <md-input name="username" v-model="NewUser.Username" />
+                                                    </md-field>
+                                                </div>
+                                                <div class="md-layout-item md-small-size-100">
+                                                    <md-field>
+                                                        <label for="username">Password</label>
+                                                        <md-input name="username" type="password" v-model="NewUser.Password" />
+                                                    </md-field>
+                                                </div>
+                                            </div>
+                                            <div class="md-layout md-gutter" style="margin:20px;">
+                                                <div class="md-layout-item md-small-size-100">
+                                                    <md-field>
+                                                        <label for="devicename">DeviceName</label>
+                                                        <md-input name="devicename" v-model="NewUser.DeviceName" />
+                                                    </md-field>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </md-card-content>
+                                    <md-card-actions>
+                                        <md-button class="md-primary" @click="createUser()" 
+                                                   :disabled="!NewUser.Username || NewUser.Username.length < 2 || !NewUser.Password || NewUser.Password.length < 6 || !NewUser.DeviceName || NewUser.DeviceName.length < 4">
+                                            Create User
+                                        </md-button>
+                                    </md-card-actions>
+                                </md-card>
+                                <user-table :users="Users" v-on:users-changed="updateUsers()"></user-table>
+                            </div>
+                        </div>
+                        <!--Groups View-->
+                        <div class="appContent device" v-if="MainContent == 'Groups'">
+                            <div>
+                                <h1>Groups</h1>
+                                <md-card>
+                                    <md-card-header>
+                                        <div class="md-title">Create Group</div>
+                                    </md-card-header>
+                                    <md-content>
+                                        <div class="md-layout md-gutter" style="margin:20px;">
+                                            <div class="md-layout-item md-small-size-100">
+                                                <md-field>
+                                                    <label for="groupName">Name</label>
+                                                    <md-input name="groupName" v-model="NewGroup.Name" />
+                                                </md-field>
+                                            </div>
+                                        </div>
+                                    </md-content>
+                                    <md-card-actions>
+                                        <md-button class="md-primary" @click="createGroup()" :disabled="!NewGroup.Name || NewGroup.Name.length < 2">Create Group</md-button>
+                                    </md-card-actions>
+                                </md-card>
+                                <group-listing 
+                                               v-for="group in Groups" 
+                                               :group="group" 
+                                               @add-user="showAddUserDialog(group)" 
+                                               @group-changed="updateGroups(); updateUsers();"
+                                               :show-options="true"></group-listing>
+
+                            </div>
+                            <md-dialog :md-active.sync="addUserDialog.Show" class="addUserDialog">
+                                <md-dialog-title>Add User to Group [{{addUserDialog.Group.Name}}]</md-dialog-title>
+
+                                <div style="margin: 15px;">
+                                    <group-listing v-if="addUserDialog.Group" :group="addUserDialog.Group" :show-options="false"></group-listing>
+                                    <h3>Select a member to add to this group</h3>
+                                    <div>
+                                        <div>
+                                            <md-field>
+                                                <label for="filterName">Filter</label>
+                                                <md-input name="filterName" v-model="addUserDialog.Filter" />
+                                            </md-field>
+                                        </div>
+                                        <div style="max-height: 300px; overflow-y: auto;">
+                                            <md-card v-for="user in Users" 
+                                                     v-if="!isUserInGroup(user.ObjectID, addUserDialog.Group) && user.Name.toLowerCase().indexOf(addUserDialog.Filter.toLowerCase()) >= 0"
+                                                     style="margin: 5px;">
+                                                <md-card-content>
+                                                    <div style="margin:10px;">
+                                                        <div style="font-size: 18px; font-weight: bold;">
+                                                            {{user.Name}}
+                                                        </div>
+                                                        <div style="font-size: 14px; font-weight: lighter">
+                                                            {{user.ObjectID}}
+                                                        </div>
+                                                        <div v-if="user.GroupID" style="font-size:12px; color:#F66">
+                                                            User is already in {{user.GroupName}} (assignment will remove it from this group)
+                                                        </div>
+                                                    </div>
+                                                </md-card-content>
+                                                <md-card-actions>
+                                                    <md-button class="md-primary" @click="addUserToGroup(user.ObjectID, addUserDialog.Group.ObjectID)">Add To Group</md-button>
+                                                </md-card-actions>
+                                            </md-card>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <md-dialog-actions>
+                                    <md-button class="md-primary" @click="addUserDialog.Show = false">Done</md-button>
+                                </md-dialog-actions>
+                            </md-dialog>
+                        </div>
+                        <!--Group View-->
+                        <div class="appContent device" v-if="MainContent == 'Group'">
+                            <div>
+                                <h1>Group</h1>
+
+                            </div>
+                        </div>
                     </md-app-content>
                 </md-app>
             </div>
+            <md-snackbar :md-position="snackPosition" :md-duration="snackDuration" :md-active.sync="snackActive" md-persistent>
+                <span>{{snackMessage}}</span>
+                <md-button class="md-primary" @click="snackActive = false">Dismiss</md-button>
+            </md-snackbar>
         </div>
+
+
+        <script type="text/x-template" id="deviceGroup">
+            <div class="group">
+                <md-card>
+                    <md-card-header>
+                        <div class="md-title">Group {{group.Name}}</div>
+                    </md-card-header>
+                    <md-card-content>
+                        <div class="deviceContainer">
+                            <div class="device" v-for="device in group.Device">
+                                <div class="deviceName">
+                                    {{device.Name}}
+                                </div>
+                                <div class="deviceConsumed">
+                                    {{device.TotalCount}}
+                                </div>
+                                <div class="deviceWhite">
+                                    {{device.ObjectCounts["1"]}}
+                                </div>
+                                <div class="deviceBlack">
+                                    {{device.ObjectCounts["0"]}}
+                                </div>
+                            </div>
+                        </div>
+                    </md-card-content>
+                    <md-card-actions v-if="group.IsVirtual">
+                        <md-button class="md-accent" @click="deleteVirtualGroup()">Delete Virtual Group</md-button>
+                    </md-card-actions>
+                </md-card>
+            </div>
+        </script>
+
+        <script type="text/x-template" id="userTable">
+            <md-table md-card @md-selected="selectedUsers">
+                <md-table-toolbar>
+                    <h1 class="md-title">Users</h1>
+                </md-table-toolbar>
+
+                <md-table-row>
+                    <md-table-head>Name</md-table-head>
+                    <md-table-head>DeviceName</md-table-head>
+                    <md-table-head>GroupName</md-table-head>
+                    <md-table-head>ID</md-table-head>
+                    <md-table-head></md-table-head>
+                </md-table-row>
+
+                <md-table-row v-for="user in users" md-selectable="multiple" md-auto-select>
+                    <md-table-cell>{{user.Name}}</md-table-cell>
+                    <md-table-cell>{{user.DeviceName}}</md-table-cell>
+                    <md-table-cell>{{user.GroupName}}</md-table-cell>
+                    <md-table-cell>{{user.ObjectID}}</md-table-cell>
+                    <md-table-cell>
+                        <md-button class="md-icon-button" @click="deleteUser(user.ObjectID)">
+                            <md-icon>delete</md-icon>
+                        </md-button>
+                    </md-table-cell>
+                </md-table-row>
+            </md-table>
+        </script>
+
+        <script type="text/x-template" id="groupListing">
+            <md-card style="margin-top:5px;" class="groupListing">
+                <md-card-content>
+                    <div>
+                        <div class="header">
+                            <div class="groupName">
+                                {{group.Name}}
+                            </div>
+                            <div class="groupID">
+                                {{group.ObjectID}}
+                            </div>
+                        </div>
+                        <div class="groupMembers" v-if="group.Devices && group.Devices.length > 0">
+                            <md-chip class="md-primary" 
+                                     :md-deletable="showOptions" 
+                                     v-for="member in group.Devices"
+                                     @md-delete="deleteUser(member.UserID)">
+                                {{member.Name}}
+                            </md-chip>
+                        </div>
+                    </div>
+                </md-card-content>
+                <md-card-actions v-if="showOptions">
+                    <md-button class="md-primary" @click="addUser()">Add User</md-button>
+                    <md-button class="md-accent" @click="deleteGroup()">Delete Group</md-button>
+                </md-card-actions>
+            </md-card>
+        </script>
+
         <script type="text/x-template" id="deviceBox">
             <md-card>
                 <md-card-header>

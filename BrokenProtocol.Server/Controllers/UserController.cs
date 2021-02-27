@@ -4,6 +4,7 @@ using LogicReinc.Asp.Authentication;
 using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 
 namespace BrokenProtocol.Server.Controllers
@@ -25,7 +26,8 @@ namespace BrokenProtocol.Server.Controllers
             return new UserData()
             {
                 Name = user.Username,
-                DeviceName = user.Device.Name
+                DeviceName = user.Device.Name,
+                IsAdmin = user.Roles.Contains("admin")
             };
         }
     }
@@ -34,5 +36,6 @@ namespace BrokenProtocol.Server.Controllers
     {
         public string Name { get; set; }
         public string DeviceName { get; set; }
+        public bool IsAdmin { get; set; }
     }
 }

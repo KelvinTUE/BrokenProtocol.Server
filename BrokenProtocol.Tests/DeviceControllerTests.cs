@@ -23,7 +23,7 @@ namespace BrokenProtocol.Tests
         {
             FileIOProvider provider = new FileIOProvider("TestData");
             User.SetProvider(provider);
-            DeviceGroup.SetProvider(provider);
+            UserDeviceGroup.SetProvider(provider);
 
             Program.StartServer(Port);
         }
@@ -32,7 +32,7 @@ namespace BrokenProtocol.Tests
         public static void StopServer()
         {
             User.Database.ForEach(u => u.Delete());
-            DeviceGroup.Database.ForEach(g => g.Delete());
+            UserDeviceGroup.Database.ForEach(g => g.Delete());
 
             Program.StopServer();
         }
@@ -138,9 +138,9 @@ namespace BrokenProtocol.Tests
 
 
         //Utility
-        private static DeviceGroup CreateGroup(int users, string prefix)
+        private static UserDeviceGroup CreateGroup(int users, string prefix)
         {
-            var group = new DeviceGroup
+            var group = new UserDeviceGroup
             {
                 Name = "Test Group"
             };
@@ -154,7 +154,7 @@ namespace BrokenProtocol.Tests
             return group;
         }
 
-        private static void AttachUserToGroup(string username, DeviceGroup group)
+        private static void AttachUserToGroup(string username, UserDeviceGroup group)
         {
             var user = CreateUser(username);
 

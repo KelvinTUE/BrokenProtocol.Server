@@ -88,3 +88,30 @@ var(--md-theme-default-accent, #ff5252);
     user-select: text;
     font-family: 'Courier New', monospace !important;
 }
+
+
+.groupListing{
+    margin: 5px;
+
+}
+    .groupListing .md-card-content{
+        padding: 30px;
+        padding-bottom: 20px;
+    }
+    .groupListing .md-card-actions {
+        margin-top: -40px;
+    }
+    .groupListing .groupID {
+        color: #666;
+    }
+    .groupListing .groupName {
+        font-size: 24px;
+    }
+    .groupListing .groupMembers {
+        margin: 25px;
+        margin-left: 0px;
+    }
+
+.addUserDialog .md-dialog-container{
+    min-width: 50%;
+}

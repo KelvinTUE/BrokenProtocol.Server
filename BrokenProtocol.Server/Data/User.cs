@@ -11,6 +11,7 @@ using System.Linq;
 using System.Text;
 using System.Text.Json.Serialization;
 using BrokenProtocol.Shared.Models;
+using BrokenProtocol.Server.Simulation;
 
 namespace BrokenProtocol.Server.Data
 {
@@ -32,10 +33,11 @@ namespace BrokenProtocol.Server.Data
 
         [Newtonsoft.Json.JsonIgnore]
         [JsonIgnore]
-        [UnifiedIMReference(nameof(GroupID), typeof(DeviceGroup), nameof(DeviceGroup.ObjectID))]
-        public DeviceGroup Group { get; set; }
+        [UnifiedIMReference(nameof(GroupID), typeof(UserDeviceGroup), nameof(UserDeviceGroup.ObjectID))]
+        public UserDeviceGroup Group { get; set; }
+        public VirtualGroup VirtualGroup { get; set; } = null;
 
-        public Device Device { get; set; } = new Device();
+        public UserDevice Device { get; set; } = new UserDevice();
 
         private TSList<ManagementSocket> ActiveClients { get; set; } = new TSList<ManagementSocket>();
 
@@ -45,7 +47,7 @@ namespace BrokenProtocol.Server.Data
         public string Password { get; set; }
 
 
-        public string[] Roles { get; set; }
+        public List<string> Roles { get; set; }
 
         //Socket
         public void AddClient(ManagementSocket socket)
@@ -94,6 +96,30 @@ namespace BrokenProtocol.Server.Data
                 Online = IsOnline,
                 LastActivity = LastActivity
             }));
+        }
+
+        public void PushGroupStatus()
+        {
+            Send(new ManagementMessage()
+            {
+                Type = "GroupStatus",
+                Data = Group
+            });
+        }
+
+        //Others
+        public IGroup GetActiveGroup()
+        {
+            return (IGroup)Group ?? VirtualGroup;
+        }
+
+        public void CreateVirtualGroup(TimeSpan expiration)
+        {
+            VirtualGroup = new VirtualGroup(this, expiration);
+        }
+        public void DeleteVirtualGroup()
+        {
+            VirtualGroup = null;
         }
 
         //Overrides
@@ -149,8 +175,9 @@ namespace BrokenProtocol.Server.Data
 
 
 
+
         //Model conversion
-        public UserDevice GetDevice() => new UserDevice()
+        public UserDeviceModel GetDevice() => new UserDeviceModel()
         {
             Name = Username
         };
@@ -164,16 +191,28 @@ namespace BrokenProtocol.Server.Data
 
         public string[] GetRoles()
         {
-            return Roles;
+            return Roles.ToArray();
         }
 
         public string GetID()
         {
             return ObjectID;
         }
+
+        public UserModel ToModel()
+        {
+            return new UserModel()
+            {
+                GroupID = GroupID,
+                GroupName = Group?.Name,
+                DeviceName = Device?.Name,
+                Name = Username,
+                ObjectID = ObjectID
+            };
+        }
     }
 
-    public class UserDevice
+    public class UserDeviceModel
     {
         public string Name { get; set; }
     }
