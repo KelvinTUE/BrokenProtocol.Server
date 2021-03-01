@@ -11,5 +11,6 @@ namespace BrokenProtocol.Shared.Models
         public string DeviceName { get; set; }
         public string GroupID { get; set; }
         public string GroupName { get; set; }
+        public int[] Activity { get; set; }
     }
 }

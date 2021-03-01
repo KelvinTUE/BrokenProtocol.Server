@@ -41,6 +41,7 @@ namespace BrokenProtocol.Server.Data
         public byte[] Salt { get; set; }
         public string Password { get; set; }
 
+        public int[] ActivityChecks = new int[365];
 
         public List<string> Roles { get; set; } = new List<string>();
 
@@ -145,7 +146,14 @@ namespace BrokenProtocol.Server.Data
         {
             if(Device != null)
                 Device.LastActivity = DateTime.Now;
-            
+
+            if (ActivityChecks == null)
+                ActivityChecks = new int[365];
+            lock (ActivityChecks)
+            {
+                ActivityChecks[DateTime.Now.DayOfYear]++;
+            }
+
             Update();
         }
 
@@ -202,14 +210,18 @@ namespace BrokenProtocol.Server.Data
 
         public UserModel ToModel()
         {
-            return new UserModel()
+            lock (ActivityChecks)
             {
-                GroupID = GroupID,
-                GroupName = (GroupID != null ? Group : null)?.Name,
-                DeviceName = Device?.Name,
-                Name = Username,
-                ObjectID = ObjectID
-            };
+                return new UserModel()
+                {
+                    GroupID = GroupID,
+                    GroupName = (GroupID != null ? Group : null)?.Name,
+                    DeviceName = Device?.Name,
+                    Name = Username,
+                    ObjectID = ObjectID,
+                    Activity = ActivityChecks.ToArray()
+                };
+            }
         }
     }
 
