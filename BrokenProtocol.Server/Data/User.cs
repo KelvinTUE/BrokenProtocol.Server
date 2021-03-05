@@ -30,6 +30,9 @@ namespace BrokenProtocol.Server.Data
         [JsonIgnore]
         [UnifiedIMReference(nameof(GroupID), typeof(UserDeviceGroup), nameof(UserDeviceGroup.ObjectID))]
         public UserDeviceGroup Group { get; set; }
+
+        [Newtonsoft.Json.JsonIgnore]
+        [JsonIgnore]
         public VirtualGroup VirtualGroup { get; set; } = null;
 
         public UserDevice Device { get; set; } = new UserDevice();
