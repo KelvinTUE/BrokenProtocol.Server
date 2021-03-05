@@ -49,7 +49,7 @@ namespace BrokenProtocol.Server.Simulation
         {
             List<Device> devices = FakeDevices.Cast<Device>().ToList();
             devices.Add(Device);
-            return Rules.CanPickup(devices, Device);
+            return Rules.CanPickup(devices, device);
         }
     }
 }
