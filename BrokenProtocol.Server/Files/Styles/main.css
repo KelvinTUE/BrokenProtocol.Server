@@ -74,6 +74,7 @@ var(--md-theme-default-accent, #ff5252);
     background-color: black;
     padding: 5px;
     font-family: 'Courier New', monospace !important;
+    overflow-y:auto;
 }
 .terminal .input {
     height: 30px;

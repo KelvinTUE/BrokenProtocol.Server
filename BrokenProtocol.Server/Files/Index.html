@@ -549,7 +549,7 @@
         </script>
         <script type="text/x-template" id="terminal">
             <div class="terminal">
-                <div class="logs">
+                <div class="logs" ref="log">
                     <div class="log" v-for="log in device.Logs">
                         {{device.Name}}:{{log.Message}}
                     </div>

@@ -102,8 +102,19 @@ Vue.component("terminal", {
         return {
         }
     },
+    watch: {
+        "device.Logs"() {
+            this.scrollBottom();
+        }
+    },
     methods: {
-
+        scrollBottom() {
+            Vue.nextTick(() => {
+                if (this.$refs.log) {
+                    this.$refs.log.scrollTop = this.$refs.log.scrollHeight;
+                }
+            });
+        }
     },
     template: "#terminal"
 });
