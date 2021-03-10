@@ -20,6 +20,8 @@ namespace BrokenProtocol.Server.Controllers
         {
             User user = HttpContext.GetAuthenticatedUser();
             user.UpdateActivity();
+
+            Data.User.PushAdminUserLog(user.ObjectID, UserLogModel.TYPE_Request, "/Device/Heartbeat");
         }
 
 
@@ -35,6 +37,8 @@ namespace BrokenProtocol.Server.Controllers
             user.UpdateActivity();
 
             IGroup group = user.GetActiveGroup();
+
+            Data.User.PushAdminUserLog(user.ObjectID, UserLogModel.TYPE_Request, "/Device/CanPickup");
 
             return group?.CanPickup(user.Device) ?? false;
         }
@@ -58,6 +62,9 @@ namespace BrokenProtocol.Server.Controllers
             user.Device.TotalCount++;
             user.UpdateActivity();
 
+
+            Data.User.PushAdminUserLog(user.ObjectID, UserLogModel.TYPE_Request, "/Device/PickUpObject");
+
             return allowed;
         }
 
@@ -79,6 +86,8 @@ namespace BrokenProtocol.Server.Controllers
             user.Device.TotalCount--;
             user.UpdateActivity();
 
+            Data.User.PushAdminUserLog(user.ObjectID, UserLogModel.TYPE_Request, "/Device/PutBackObject");
+
             return user.Device.TotalCount >= 0;
         }
 
@@ -99,6 +108,8 @@ namespace BrokenProtocol.Server.Controllers
 
             user.Device.IncrementColor(data.Color);
             user.UpdateActivity();
+
+            Data.User.PushAdminUserLog(user.ObjectID, UserLogModel.TYPE_Request, "/Device/DeterminedObject");
 
             return true;
         }
@@ -141,6 +152,9 @@ namespace BrokenProtocol.Server.Controllers
             User user = HttpContext.GetAuthenticatedUser();
             user.SensorData(sensorData);
             user.UpdateActivity();
+
+            Data.User.PushAdminUserLog(user.ObjectID, UserLogModel.TYPE_Request, "/Device/SensorData");
+
             return true;
         }
     }

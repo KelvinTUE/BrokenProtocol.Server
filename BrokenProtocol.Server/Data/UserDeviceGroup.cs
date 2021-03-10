@@ -37,6 +37,16 @@ namespace BrokenProtocol.Server.Data
             return _rules.CanPickup(Devices.Cast<Device>().ToList(), device);
         }
 
+        public void ResetValues()
+        {
+            foreach(User user in Users)
+            {
+                user.Device.Clear();
+                user.Update();
+            }
+
+        }
+
         public override bool Delete()
         {
             foreach(User user in Users)

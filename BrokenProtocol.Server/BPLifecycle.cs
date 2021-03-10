@@ -3,6 +3,7 @@ using BrokenProtocol.Server.Simulation;
 using LogicReinc.Asp;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 
 namespace BrokenProtocol.Server
@@ -45,6 +46,21 @@ namespace BrokenProtocol.Server
                 catch(Exception ex)
                 {
                     Console.WriteLine("Group Status failure: " + ex.Message);
+                }
+            }
+
+            List<UserDeviceGroup> groups = UserDeviceGroup.Database.ToList();
+            List<User> admins = User.Database.Where(x => x.IsAdmin && x.HasClients());
+
+            foreach(User admin in admins)
+            {
+                try
+                {
+                    admin.PushAdminGroupsStatus(groups);
+                }
+                catch(Exception ex)
+                {
+                    Console.WriteLine("Admin Group Status failure: " + ex.Message);
                 }
             }
         }

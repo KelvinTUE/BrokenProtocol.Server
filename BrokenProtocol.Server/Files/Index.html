@@ -78,6 +78,10 @@
                                 <md-icon>group_work</md-icon>
                                 <span class="md-list-item-text">Groups</span>
                             </md-list-item>
+                            <md-list-item @click="toMonitor" v-if="User.IsAdmin">
+                                <md-icon>search</md-icon>
+                                <span class="md-list-item-text">Monitor</span>
+                            </md-list-item>
                         </md-list>
                     </md-app-drawer>
 
@@ -368,6 +372,67 @@
                                 </md-dialog-actions>
                             </md-dialog>
                         </div>
+
+                        <!--MonitorView-->
+                        <div class="appContent device" v-if="MainContent == 'Monitor'">
+                            <div>
+                                <h1>Monitoring</h1>
+                                <md-card>
+                                    <md-card-header>
+                                        <div class="md-title">User Monitoring</div>
+                                    </md-card-header>
+                                    <md-card-content>
+                                        <div>
+                                            <md-field>
+                                                <label for="selectedUser">User</label>
+                                                <md-select v-model="SelectedUserLog" name="selectedUser">
+                                                    <md-option :value="user.ObjectID" v-for="user in Users" v-bind:key="user.ObjectID">{{user.Name}}</md-option>
+                                                </md-select>
+                                            </md-field>
+                                        </div>
+                                        <div v-if="SelectedUserLog">
+                                            <div style="color:orange; font-size: 13px;">
+                                                If no terminal is not shown, it means no logs are received yet.
+                                            </div>
+                                            <terminal :device="userLog" v-for="userLog in UserLogs" v-if="userLog.ID == SelectedUserLog"></terminal>
+                                        </div>
+                                        <md-button class="md-primary md-raised" @click="clearUserLogs()">Clear All UserLogs (Memory)</md-button>
+                                    </md-card-content>
+                                </md-card>
+                                <md-card style="margin-top: 10px;">
+                                    <md-card-header>
+                                        <div class="md-title">Group Monitoring</div>
+                                    </md-card-header>
+                                    <md-card-content>
+                                        <div>
+                                            <div>
+                                                <md-field>
+                                                    <label for="selectedGroup">Group</label>
+                                                    <md-select v-model="MonitorSelectedGroup" name="selectedGroup">
+                                                        <md-option :value="group.ObjectID" v-for="group in Groups" v-bind:key="group.ObjectID">{{group.Name}}</md-option>
+                                                    </md-select>
+                                                </md-field>
+                                            </div>
+                                            <div>
+                                                <div style="color:orange; font-size: 13px;">
+                                                    If no group is not shown, it means no updates are received yet.
+                                                </div>
+                                                <div v-for="group in MonitorGroups" v-if="MonitorSelectedGroup == group.ObjectID || MonitorSelectedGroup == 'All'">
+                                                    <div style="width: calc(100% - 425px); display: inline-block;">
+                                                        <device-group :group="Group"></device-group>
+                                                    </div>
+                                                    <md-card style="width: 300px; margin-left: 50px; display: inline-block;">
+                                                        <md-card-content>
+                                                            <md-button style="width: calc(100% - 15px);" class="md-primary md-raised" @click="resetGroupValues(group.ObjectID)">Reset Values</md-button>
+                                                        </md-card-content>
+                                                    </md-card>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </md-card-content>
+                                </md-card>
+                            </div>
+                        </div>
                     </md-app-content>
                 </md-app>
             </div>
@@ -551,7 +616,20 @@
             <div class="terminal">
                 <div class="logs" ref="log">
                     <div class="log" v-for="log in device.Logs">
-                        {{device.Name}}:{{log.Message}}
+                        <div style="display:inline-block;">[{{log.Time}}]</div> {{device.Name}}:{{log.Message}}
+                    </div>
+                </div>
+                <div class="input">
+                    >
+                    <input type="text" />
+                </div>
+            </div>
+        </script>
+        <script type="text/x-template" id="terminal-only">
+            <div class="terminal">
+                <div class="logs" ref="log">
+                    <div class="log" v-for="log in logs">
+                        {{log.Message}}
                     </div>
                 </div>
                 <div class="input">

@@ -62,6 +62,19 @@ namespace BrokenProtocol.Server.Controllers
 
         [HttpPost]
         [Authorize("admin")]
+        public bool ResetGroupValues(string id)
+        {
+            UserDeviceGroup group = UserDeviceGroup.GetObject(id);
+            if (group == null)
+                return false;
+
+            group.ResetValues();
+
+            return true;
+        }
+
+        [HttpPost]
+        [Authorize("admin")]
         public bool CreateGroup([FromBody]GroupCreateModel model)
         {
             UserDeviceGroup group = new UserDeviceGroup();

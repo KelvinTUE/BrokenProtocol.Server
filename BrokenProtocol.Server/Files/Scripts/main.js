@@ -118,6 +118,28 @@ Vue.component("terminal", {
     },
     template: "#terminal"
 });
+Vue.component("terminal-only", {
+    props: ["logs"],
+    data: function () {
+        return {
+        }
+    },
+    watch: {
+        "logs"() {
+            this.scrollBottom();
+        }
+    },
+    methods: {
+        scrollBottom() {
+            Vue.nextTick(() => {
+                if (this.$refs.log) {
+                    this.$refs.log.scrollTop = this.$refs.log.scrollHeight;
+                }
+            });
+        }
+    },
+    template: "#terminal-only"
+});
 Vue.component("sensorBox", {
     props: ["device"],
     data: function(){
@@ -274,6 +296,16 @@ new Vue({
                 Whatever: "Something"
             }
         },
+        SelectedUserLog: "",
+        UserLogs: [
+
+        ],
+
+        MonitorSelectedGroup: "",
+        MonitorGroups: [
+
+        ],
+
         Users: [],
         Groups: [],
         NewGroup: {
@@ -412,7 +444,70 @@ new Vue({
                         });
                     }
                     break;
+                case "UserLog":
+                    if (msg.Data) {
+                        Vue.nextTick(() => {
+                            var user = msg.Data.UserID;
+                            var userLog = this.getUserLog(user);
+                            var time = new Date();
+                            msg.Data.Log.Time = time.getHours() + ":" + ("" + time.getMinutes()).padStart(2, '0') + ":" + ("" + time.getSeconds()).padStart(2, '0');
+                            userLog.Logs.push(msg.Data.Log);
+                        });
+                    }
+                    break;
+                case "AdminGroupsStatus":
+                    if (msg.Data) {
+                        Vue.nextTick(() => {
+
+                            for (var i = 0; i < msg.Data.length; i++) {
+                                var group = msg.Data[i];
+                                var groupIndex = this.getGroupIndex(group.ObjectID);
+
+                                if (groupIndex < 0)
+                                    this.MonitorGroups.push(group);
+                                else
+                                    Vue.set(this.MonitorGroups, groupIndex, group);
+                            }
+
+                        });
+                    }
+                    break;
             }
+        },
+        getGroupIndex(id) {
+            for (var i = 0; i < this.MonitorGroups.length; i++) {
+                if (this.MonitorGroups[i].ObjectID == id)
+                    return i;
+            }
+            return -1;
+        },
+        getUserLog(id) {
+            var log = undefined;
+            for (var i = 0; i < this.UserLogs.length; i++) {
+                if (this.UserLogs[i].ID == id) {
+                    log = this.UserLogs[i];
+                    break;
+                }
+            }
+            if (!log) {
+                var user = this.getUser(id);
+
+                log = {
+                    ID: id,
+                    Name: user.Name,
+                    Logs: []
+                };
+                this.UserLogs.push(log);
+            }
+            return log;
+        },
+        getUser(id) {
+            for (var i = 0; i < this.Users.length; i++) {
+                if (this.Users[i].ObjectID == id) {
+                    return this.Users[i];
+                }
+            }
+            return undefined;
         },
         toggleMenu () {
             this.menuVisible = !this.menuVisible
@@ -434,6 +529,9 @@ new Vue({
         },
         toGroup() {
             this.toView("Group");
+        },
+        toMonitor() {
+            this.toView("Monitor");
         },
         navigate(url) {
             window.location.href = url
@@ -530,6 +628,23 @@ new Vue({
         },
         isUserInGroup(userid, group) {
             return group.Devices.filter(x => x.UserID == userid).length > 0;
+        },
+
+        resetGroupValues(id) {
+            api.Management.ResetGroupValues(id, "", (data, err) => {
+                Vue.nextTick(() => {
+                    if (data && !err) {
+                        this.showMessage("Values for group [" + id + "] reset");
+                    }
+                    else
+                        this.showMessage("Failed: " + err);
+                });
+            });
+        },
+
+
+        clearUserLogs() {
+            this.UserLogs = [];
         }
     },
     mounted(){

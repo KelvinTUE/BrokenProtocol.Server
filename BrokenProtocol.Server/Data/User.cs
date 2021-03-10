@@ -37,6 +37,8 @@ namespace BrokenProtocol.Server.Data
 
         public UserDevice Device { get; set; } = new UserDevice();
 
+        public bool IsAdmin => Roles?.Contains("admin") ?? false;
+
         private TSList<ManagementSocket> ActiveClients { get; set; } = new TSList<ManagementSocket>();
 
         //Authentication
@@ -103,6 +105,61 @@ namespace BrokenProtocol.Server.Data
             {
                 Type = "GroupStatus",
                 Data = GetActiveGroup()
+            });
+        }
+
+        public static void PushAdminMessage(ManagementMessage message)
+        {
+            List<User> users = Database.Where(x => x.IsAdmin && x.HasClients());
+            foreach (User user in users)
+            {
+                try
+                {
+                    user.Send(message);
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine("Failed to send management message to admin");
+                }
+            }
+        }
+        public static void PushGroupsStatusToAdmins(List<UserDeviceGroup> groups)
+        {
+            PushAdminMessage(new ManagementMessage()
+            {
+                Type = "AdminGroupsStatus",
+                Data = groups
+            });
+        }
+        public static void PushAdminUserLog(string user, string type, string log)
+        {
+            try
+            {
+                PushAdminMessage(new ManagementMessage()
+                {
+                    Type = "UserLog",
+                    Data = new UserLogModel()
+                    {
+                        UserID = user,
+                        Log = new Log()
+                        {
+                            Tags = new string[] { type },
+                            Message = $"{log}"
+                        }
+                    }
+                });
+            }
+            catch(Exception ex)
+            {
+                Console.WriteLine("Failed to send admin log");
+            }
+        }
+        public void PushAdminGroupsStatus(List<UserDeviceGroup> groups)
+        {
+            Send(new ManagementMessage()
+            {
+                Type = "AdminGroupsStatus",
+                Data = groups
             });
         }
 
