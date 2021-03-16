@@ -155,8 +155,8 @@ Content-Type: "application/json"
 
 ```
 {   
-    "User": "YourGroupUsername",   
-    "Password": "YourGroupPassword"
+    "User": "{YourGroupUsername}",   
+    "Password": "{YourGroupPassword}"
 }
 ```
 
@@ -166,7 +166,7 @@ Content-Type: "application/json"
 
 ```
 {   
-   "Token": "TokenToUseInAuthHeader"
+   "Token": "{TokenToUseInAuthHeader}"
 }
 ```
 
